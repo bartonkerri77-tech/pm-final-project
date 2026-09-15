@@ -1,13 +1,18 @@
-# Problem Hook & Value Proposition (Module 1)
+# Problem Hook & Value Proposition, Module 1
 
-## Responses
-- **Chosen path, which scenario are you committing to? (StreamLine or RouteLogic, or your own):** Streamline
-- **Strategic crisis, based on the brief, if the company does nothing for 12 months, what happens to its market position?:** If we do nothing for 12 months, the company will... continue to see plateauing engagement and rising subscriber churn. We will lose our loyal, high-value viewers to smaller, specialized streaming services that offer better content discovery and curated experiences, ultimately eroding our market authority.
-- **Moment of misery, what is the user likely doing outside the product (Google, spreadsheets, a competitor) because your tool isn’t serving them?:** The user is currently forced to... endlessly scroll through our massive 15,000-title library without finding what they want, often abandoning the app to search Google, read external reviews, or switch to specialized, high-quality niche streaming competitors just to discover a good movie.
-- **Problem hook, summarize the business risk and user pain into one urgent sentence.:** We must solve rising subscriber churn and plateauing engagement by addressing the overwhelming "paradox of choice" that leaves our high-value viewers frustrated and unable to easily discover quality cinema within our massive library.
-- **Value proposition, based on the proposed initiative (Spotlight or Velocity), what is the new value and why is it urgent to launch now?:** For high-value viewers who care deeply about discovery, we will launch StreamLine Spotlight—a premium, highly-curated space for high-quality cinema—because we are rapidly losing our authority and our most loyal users to niche competitors, and we must bridge the engagement gap before churn accelerates further.
+- **Scenario:** StreamLine Spotlight (B2C)
 
-## Cold-read your own hook
-- **Is the business risk high enough to justify a new initiative, a high-stakes threat, or a minor inconvenience?:** Yes, it is a high-stakes threat. Rising subscriber churn and plateauing engagement directly impact the bottom line. Losing loyal, high-value viewers to niche competitors means StreamLine is losing its market authority and future revenue, which easily justifies investing in a major new initiative rather than treating it as a minor inconvenience.
-- **Is the moment of misery a systemic problem or just an edge case?:** It is a systemic problem. It is not an isolated edge use case.
-- **Does the value proposition actually remove the obstacle you identified, or is it a generic feature?:** Yes, It directly removes the obstacle. By creating a premium, highly-curated space (StreamLine Spotlight),
+## Strategic crisis
+If we do nothing for 12 months, the company will... continue to see plateauing engagement and rising subscriber churn. We will lose our loyal, high-value viewers to smaller, specialized streaming services that offer better content discovery and curated experiences, ultimately eroding our market authority.
+
+## Moment of misery
+The user is currently forced to... endlessly scroll through our massive 15,000-title library without finding what they want, often abandoning the app to search Google, read external reviews, or switch to specialized, high-quality niche streaming competitors just to discover a good movie.
+
+## Problem hook
+We must solve rising subscriber churn and plateauing engagement by addressing the overwhelming "paradox of choice" that leaves our high-value viewers frustrated and unable to easily discover quality cinema within our massive library.
+
+## Value proposition
+For For high-value viewers, we will We will launch StreamLine Spotlight. It will provide a premium, highly-curated space for high-quality cinema because We are rapidly losing our authority and our most loyal users to niche and newer, shinier competitors. We must bridge the engagement gap before churn accelerates further..
+
+## Cold-read self-review
+The weakest part is the "For Who" part of the Value Proposition. I need to go deeper on that ICP, as this initiative might be better suited for premium subscribers with saved preferences in a certain demographic. Right now the Value Prop is reading still as generic - no data points and more general pain. It could have the same rationale as any other innovation efforts. So it will need more detail to stand the stress test (particularly research, data, etc).
