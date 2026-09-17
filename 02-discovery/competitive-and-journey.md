@@ -1,16 +1,14 @@
-# Competitive Analysis & Journey Map
-
-> **Module 2 · Lab 2 — ★ Deliverable 2.** Repo file `02-discovery/competitive-and-journey.md` — part of your submission.
-> Do the lab in the **Module 2 · Exercise 2 Guide** (linked from the Module 2 deck), then click **⬇ Download .md** — it saves as this exact file. Commit it here.
-> It becomes the **Competitive Analysis & Journey Map** slide of your Module 6 final deck. Builds on your `ai-synthesis.md` and your Module 1 `problem-hook.md`.
+# Competitive Analysis & Journey Map (Module 2)
 
 ## Responses
+- **Role, who are you solving for? (the specific user segment or profile):** The Disillusioned Enthusiast - A discerning, high-value viewer with specific, nuanced taste who actively wants to discover new titles.
+- **Goal, what is this user ultimately trying to achieve?:** Be pointed toward a well-matched "hidden gem," not just more of what he already watched.
+- **Friction, the main barrier (moment of misery) stopping them from succeeding:** Watches one action film and gets three near-identical sequels back from "Because you watched" — "I'm not a genre, I'm a person" — trusts a friend's taste over the algorithm's, and eventually cancels for a competitor that sends two hand-picked films a week, summarizing the trade as "volume went up, quality of my evenings went down."
+- **External tools, the outside platforms or tools the user is forced to use:** Using referrals from friends or other external sources (a friend's text, a competitor's newsletter, an email)
+- **The process, the 3 to 5 manual steps the user takes to get the job done:** First, he stops trusting the in-app rail after it returns near-duplicate sequels for a single action film — "I'm not a genre, I'm a person" marks the moment he starts treating "Because you watched" as noise to ignore rather than a starting point. Second, he falls back on word-of-mouth, waiting for a friend's opinion before choosing what to watch, because he trusts a person's taste over the algorithm's. Third, he subscribes to an external curation source — literally a competitor's email, which sends him two hand-picked films a week, both of which he watches. Fourth, once that external source is reliably solving the problem our platform doesn't, he cancels outright: "volume went up, quality of my evenings went down."
 
-- **Role, who are you solving for?:** _(not filled in)_
-- **Goal, what is this user ultimately trying to achieve?:** _(not filled in)_
-- **Friction, the main barrier (moment of misery) stopping them:** _(not filled in)_
-- **External tools the user is forced to use:** _(not filled in)_
-- **The process, the 3–5 manual steps they take:** _(not filled in)_
-- **Core frustration, where the process feels most "broken":** _(not filled in)_
-- **The evidence, a quote or behavior from the research:** _(not filled in)_
-- **Journey map, a shareable link or the map file you committed:** _(not filled in)_
+Summarized as - Declining trust in the algorithm, quiet substitution with an outside source, and only then the cancellation.
+- **Core frustration, the exact moment the process feels most “broken”:** This is inefficient in a specific way: he is paying for a 15,000-title library and then sourcing his actual viewing decisions from outside it — a friend's text, a competitor's newsletter — which means the catalog he's paying for sits idle while he does his discovery work elsewhere, asynchronously and on someone else's schedule rather than on demand. Every one of those hand-picked emails he opens is, in effect, a manual patch for a recommendation system we should be providing ourselves.
+- **The evidence, a specific quote or behavior from the research that proves this:** "I'm not a genre, I'm a person" 
+"Because you watched" is noise
+- **Your journey map, a shareable link, or the map file you committed (e.g. journey-map.html):** https://github.com/bartonkerri77-tech/pm-final-project/blob/b9518a495700bee5483c9afe2b60ed5cded4569e/01-product-thinking/streamline-spotlight-future-state.html
