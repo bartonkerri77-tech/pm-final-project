@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamLine Spotlight — Future-State Journey</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --series-1:       #2a78d6;
+    --series-1-soft:  #cde2fb;
+    --border:         rgba(11,11,11,0.10);
+    --card-bg:        #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --series-1:       #3987e5;
+      --series-1-soft:  #16324f;
+      --border:         rgba(255,255,255,0.10);
+      --card-bg:        #222221;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px 20px 40px;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  header {
+    margin-bottom: 22px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-size: 26px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    max-width: 720px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .subtitle b { color: var(--text-primary); }
+
+  .chart-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px 16px;
+    margin-bottom: 22px;
+  }
+  .chart-card h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+  .chart-wrap { width: 100%; }
+  svg { width: 100%; height: auto; display: block; }
+  .axis-label { fill: var(--text-muted); font-size: 12px; }
+  .grid-line { stroke: var(--gridline); stroke-width: 1; }
+  .trend-line { fill: none; stroke: var(--series-1); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .trend-point { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }
+  .emotion-label { fill: var(--text-primary); font-size: 13px; font-weight: 600; text-anchor: middle; }
+  .stage-tick { fill: var(--text-secondary); font-size: 12.5px; text-anchor: middle; }
+  .dash-line { stroke: var(--baseline); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+  .callout {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 8px auto 4px;
+    max-width: 420px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--series-1);
+    border-radius: 8px;
+    background: var(--card-bg);
+  }
+  .callout .dot {
+    flex: 0 0 auto;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--series-1);
+    margin-top: 6px;
+  }
+  .callout .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin: 0 0 3px;
+  }
+  .callout .quote {
+    font-size: 13.5px;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .stage-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stage-number {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--series-1-soft);
+    color: var(--series-1);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stage-name {
+    font-size: 15.5px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .field {
+    margin: 0;
+  }
+  .field .k {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .field .v {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .field.action .v { color: var(--text-primary); }
+
+  .advantages {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .advantages h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .adv-item {
+    display: flex;
+    gap: 10px;
+  }
+  .adv-item .n {
+    flex: 0 0 auto;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: var(--series-1-soft);
+    color: var(--series-1);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adv-item p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  @media (max-width: 760px) {
+    .stages { grid-template-columns: 1fr 1fr; }
+    .adv-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .chart-card, .stage-card, .advantages { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <p class="eyebrow">Future-State Journey · Persona: The Disillusioned Enthusiast</p>
+    <h1>StreamLine Spotlight</h1>
+    <p class="subtitle">
+      For high-value viewers, we will launch <b>StreamLine Spotlight</b> — a premium, highly-curated space for
+      quality cinema — to restore brand authority and win back users lost to niche, human-curated competitors
+      before churn accelerates further.
+    </p>
+  </header>
+
+  <div class="chart-card">
+    <h2>Sentiment Arc — Friction to Delight</h2>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+        <!-- gridlines -->
+        <line class="grid-line" x1="60" y1="40" x2="760" y2="40"></line>
+        <line class="grid-line" x1="60" y1="240" x2="760" y2="240"></line>
+        <text class="axis-label" x="60" y="30">Delight</text>
+        <text class="axis-label" x="60" y="256">Friction</text>
+
+        <!-- trend line -->
+        <path class="trend-line" d="M100,160 L300,100 L500,80 L700,60"></path>
+
+        <!-- dashed drop to callout for final stage -->
+        <line class="dash-line" x1="700" y1="60" x2="700" y2="275"></line>
+
+        <!-- points + labels -->
+        <g>
+          <circle class="trend-point" cx="100" cy="160" r="6"></circle>
+          <text class="emotion-label" x="100" y="140">Curious</text>
+          <text class="stage-tick" x="100" y="290">1. Rediscovery</text>
+
+          <circle class="trend-point" cx="300" cy="100" r="6"></circle>
+          <text class="emotion-label" x="300" y="80">Delighted</text>
+          <text class="stage-tick" x="300" y="290">2. The Match</text>
+
+          <circle class="trend-point" cx="500" cy="80" r="6"></circle>
+          <text class="emotion-label" x="500" y="60">Trusting</text>
+          <text class="stage-tick" x="500" y="290">3. The Switch</text>
+
+          <circle class="trend-point" cx="700" cy="60" r="6"></circle>
+          <text class="emotion-label" x="700" y="40">Advocate</text>
+          <text class="stage-tick" x="700" y="290">4. Renewed Loyalty</text>
+        </g>
+      </svg>
+    </div>
+    <div class="callout">
+      <div class="dot"></div>
+      <div>
+        <p class="label">Advocacy Moment</p>
+        <p class="quote">Renews subscription and recommends Spotlight to like-minded friends.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stages">
+    <div class="stage-card">
+      <span class="stage-number">1</span>
+      <p class="stage-name">Rediscovery</p>
+      <div class="field action">
+        <span class="k">Action → Benefit</span>
+        <span class="v">Notices in-app editorial pick → distinct signal, not algorithmic guesswork.</span>
+      </div>
+      <div class="field">
+        <span class="k">Internal State</span>
+        <span class="v">Skepticism softens into cautious curiosity.</span>
+      </div>
+      <div class="field">
+        <span class="k">Pain Point Addressed</span>
+        <span class="v">Distrust of repetitive "Because you watched" suggestions.</span>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <span class="stage-number">2</span>
+      <p class="stage-name">The Match</p>
+      <div class="field action">
+        <span class="k">Action → Benefit</span>
+        <span class="v">Watches curator's hidden-gem pick → finds a match beyond his usual genre.</span>
+      </div>
+      <div class="field">
+        <span class="k">Internal State</span>
+        <span class="v">Surprise and delight; feels seen as a person, not a genre.</span>
+      </div>
+      <div class="field">
+        <span class="k">Pain Point Addressed</span>
+        <span class="v">Franchise-driven, low-diversity recommendations.</span>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <span class="stage-number">3</span>
+      <p class="stage-name">The Switch</p>
+      <div class="field action">
+        <span class="k">Action → Benefit</span>
+        <span class="v">Checks Spotlight before texting a friend → gets consistent curated picks in-app.</span>
+      </div>
+      <div class="field">
+        <span class="k">Internal State</span>
+        <span class="v">Growing reliance on platform curation over external sources.</span>
+      </div>
+      <div class="field">
+        <span class="k">Pain Point Addressed</span>
+        <span class="v">Dependence on friends and a competitor's curated email.</span>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <span class="stage-number">4</span>
+      <p class="stage-name">Renewed Loyalty</p>
+      <div class="field action">
+        <span class="k">Action → Benefit</span>
+        <span class="v">Renews subscription → recommends Spotlight to like-minded friends.</span>
+      </div>
+      <div class="field">
+        <span class="k">Internal State</span>
+        <span class="v">Restored trust; platform reclaims taste-making authority.</span>
+      </div>
+      <div class="field">
+        <span class="k">Pain Point Addressed</span>
+        <span class="v">Churn risk to niche, human-curated competitors.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="advantages">
+    <h2>Competitive Advantages Over the Manual Workaround</h2>
+    <div class="adv-grid">
+      <div class="adv-item">
+        <span class="n">1</span>
+        <p>On-demand, in-app curation beats waiting on a competitor's fixed weekly email schedule.</p>
+      </div>
+      <div class="adv-item">
+        <span class="n">2</span>
+        <p>Combines full catalog scale with human-level taste, which a single friend's opinion cannot offer.</p>
+      </div>
+      <div class="adv-item">
+        <span class="n">3</span>
+        <p>Curation improves over time using viewing data, unlike a friend's or a newsletter's static picks.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
