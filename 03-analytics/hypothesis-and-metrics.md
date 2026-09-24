@@ -13,12 +13,11 @@ Wanderers (41% of the base) have the lowest LTV and fewest sessions, yet they sh
 
 ## Evidence
 - **Qualitative (M2):** The user is currently forced to... endlessly scroll through our massive 15,000-title library without finding what they want, often abandoning the app to search Google, read external reviews, or switch to specialized, high-quality niche streaming competitors just to discover a good movie. Watches one action film and gets three near-identical sequels back from "Because you watched" — "I'm not a genre, I'm a person" — trusts a friend's taste over the algorithm's, and eventually cancels for a competitor that sends two hand-picked films a week, summarizing the trade as "volume went up, quality of my evenings went down."
-- **Quantitative (M3):** A few metrics signal this is a clear problem: subscriber subscription over 6 months is very low, fewer users daily (mobile), shorter session times, and patterns from wanderers.
-
-Subscriber retention over 6 months is only 19%
-Daily active users (mobile) is down 21% from 1,890,000 6 months ago to 1,490,000. 
- Only 11% of visitors reach a 30+ minute session, down from 19% six months ago. The top of the funnel is holding; the problem is depth of engagement.
-Wanderers (41% of the base) have the lowest LTV and fewest sessions, yet they show the biggest churn improvement (, 22 pts) when exposed to Spotlight.
+- **Quantitative (M3):** 4 metrics signal this is a clear problem: subscriber subscription over 6 months is very low, fewer users daily users is down 21% (mobile), only 11% of visitors reach 30+ session times (shorter session times), and patterns from wanderers have the lowest LTV and fewest sessions.
+ - Subscriber retention over 6 months is only 19%
+ - Daily active users (mobile) is down 21% from 1,890,000 6 months ago to 1,490,000. 
+ - Only 11% of visitors reach a 30+ minute session, down from 19% six months ago. The top of the funnel is holding; the problem is depth of engagement.
+ - Wanderers (41% of the base) have the lowest LTV and fewest sessions, yet they show the biggest churn improvement (, 22 pts) when exposed to Spotlight.
 
 ## Persona & problem
 - **Role:** The Disillusioned Enthusiast - A discerning, high-value viewer with specific, nuanced taste who actively wants to discover new titles.
