@@ -1,0 +1,610 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Spotlight Rail Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0D1015;--panel:#141922;--panel2:#1B212C;--line:#283040;--text:#E7EAF0;--muted:#8F99AA;
+  --accent:#F2C14E;--accent-ink:#1E1606;--ok:#5CC98B;--warn:#F08C5A;--bad:#E36B6B;--info:#7AB0F5;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--body);padding-block:20px 40px;padding-inline:clamp(16px,3vw,32px)}
+button,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px;max-width:1320px;margin-inline:auto}
+.top h1{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.01em}
+.top p{margin:4px 0 0;color:var(--muted)}
+.flow{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.flow b{color:var(--accent);font-weight:500}
+.shell{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;max-width:1320px;margin-inline:auto;align-items:start}
+@media (max-width:1020px){.shell{grid-template-columns:minmax(0,1fr)}}
+
+/* stage */
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 12px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel2);color:var(--text)}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.btn:hover{border-color:#3a4458}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.clock{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+.hint{font-size:12px;color:var(--muted)}
+.frame-wrap{display:flex;justify-content:center}
+.frame{position:relative;background:#000;overflow:hidden;border:10px solid #04060A;box-shadow:0 0 0 1px var(--line)}
+.frame.mobile{width:360px;max-width:100%;height:720px;border-radius:38px}
+.frame.tv{width:100%;max-width:900px;aspect-ratio:16/9;min-height:420px;border-radius:12px;border-width:12px}
+@media (max-width:480px){.frame.mobile{height:640px;border-width:8px;border-radius:30px}}
+
+/* the StreamLine app */
+.app{position:absolute;inset:0;display:flex;flex-direction:column;background:#07090D;color:#EEF0F4;font-size:13px}
+.app-head{display:flex;align-items:center;gap:14px;padding:14px 16px 10px;flex:none}
+.logo{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.logo i{font-style:normal;color:var(--accent)}
+.tvnav{display:flex;gap:16px;color:#9AA3B2;font-size:12px}
+.tvnav span:first-child{color:#fff}
+.mobile .tvnav{display:none}
+.viewport{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:12px;scrollbar-width:thin}
+.row{padding:6px 0 10px}
+.row-head{display:flex;align-items:baseline;gap:8px;padding:0 16px 8px}
+.row-head h2{font-size:15px;font-weight:700}
+.row-head .sub{font-size:11px;color:#A2ABB9}
+.chip-hp{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:2px 6px;border-radius:4px}
+.rail{display:flex;gap:10px;overflow-x:auto;padding:4px 16px 8px;scroll-snap-type:x proximity;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.tile{flex:none;width:108px;background:none;border:0;padding:0;text-align:left;scroll-snap-align:start;border-radius:8px;transition:transform .15s}
+.poster{display:block;aspect-ratio:2/3;border-radius:8px;position:relative;overflow:hidden}
+.poster .pt{position:absolute;left:8px;right:8px;bottom:8px;font-family:var(--display);font-weight:700;font-size:13px;line-height:1.15;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.poster::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55))}
+.poster .pt{z-index:1;font-size:14px;letter-spacing:-.01em}
+.poster .py{position:absolute;top:7px;left:8px;z-index:1;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:rgba(255,255,255,.75)}
+.poster .pd{position:absolute;left:8px;right:8px;bottom:8px;z-index:1;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.poster:has(.pd) .pt{bottom:22px}
+.spot-head{flex-wrap:wrap;row-gap:2px}
+.qual{font-family:var(--display);font-weight:500;font-size:12.5px;background:linear-gradient(90deg,#F2C14E,#F7E3A1 45%,#F29A4E);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.01em}
+.tv .qual{font-size:14px}
+.row[data-row="spotlight"]{background:radial-gradient(ellipse 70% 90% at 20% 0%,rgba(242,193,78,.12),transparent 70%)}
+.enote{border-left:2px solid var(--accent);padding:6px 0 6px 10px;font-size:12.5px;color:#E6E0CF;max-width:52ch}
+.enote span{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:2px}
+.tname{display:block;font-size:11.5px;color:#C9CFD9;margin-top:5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);z-index:2}
+.spot .poster{box-shadow:0 0 0 1px rgba(242,193,78,.35)}
+.tile:focus-visible,.tv .tile:focus{outline:3px solid var(--accent);outline-offset:3px}
+.tv .tile{width:122px}
+.tv .tile:focus{transform:scale(1.06)}
+.tabbar{flex:none;display:flex;justify-content:space-around;padding:8px 0 12px;border-top:1px solid #1A1F28;color:#8C95A4;font-size:10.5px}
+.tabbar span:first-child{color:#fff}
+.tv .tabbar{display:none}
+
+/* detail */
+.detail{position:relative;min-height:100%}
+.hero{position:relative;aspect-ratio:16/10}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,13,.1),#07090D 96%)}
+.back{position:absolute;top:10px;left:12px;z-index:2;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;color:#fff;font-size:12px}
+.dbody{padding:0 16px 20px;margin-top:-28px;position:relative;z-index:1;display:flex;flex-direction:column;gap:10px}
+.dbody h2{font-size:24px;font-weight:700;line-height:1.1}
+.meta{color:#A7AFBC;font-size:12px;font-variant-numeric:tabular-nums}
+.syn{color:#D5DAE2;font-size:13px;max-width:52ch}
+.play{align-self:flex-start;display:inline-flex;gap:8px;align-items:center;background:#fff;color:#07090D;border:0;border-radius:6px;padding:9px 22px;font-weight:600;font-size:14px}
+.play:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.tv .detail{display:grid;grid-template-columns:1fr 1.1fr;min-height:100%}
+.tv .hero{aspect-ratio:auto;order:2;min-height:100%}
+.tv .hero::after{background:linear-gradient(90deg,#07090D,rgba(7,9,13,0) 50%)}
+.tv .dbody{margin:0;padding:48px 24px 24px;justify-content:center}
+.tv .back{top:14px;left:18px}
+
+/* player */
+.player{position:absolute;inset:0;background:#000;z-index:5;display:flex;flex-direction:column;justify-content:space-between}
+.video{position:absolute;inset:0;background-size:180% 180%!important;animation:pan 14s ease-in-out infinite alternate}
+@keyframes pan{from{background-position:0% 30%}to{background-position:100% 70%}}
+@media (prefers-reduced-motion:reduce){.video{animation:none}}
+.video.paused{animation-play-state:paused;filter:brightness(.6)}
+.ptop,.pbot{position:relative;z-index:1;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.ptop{background:linear-gradient(180deg,rgba(0,0,0,.6),transparent)}
+.pbot{background:linear-gradient(0deg,rgba(0,0,0,.7),transparent);flex-direction:column;align-items:stretch;gap:8px}
+.ptitle{font-family:var(--display);font-weight:700;font-size:14px}
+.ptop .back{position:static}
+.bar{height:4px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.pctl{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;color:#D8DCE3;font-variant-numeric:tabular-nums}
+.pp{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;width:34px;height:34px;color:#fff;font-size:12px}
+
+/* panel */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;background:none;border:0;padding:12px 8px;color:var(--muted);border-bottom:2px solid transparent;font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.pbody{padding:16px;display:flex;flex-direction:column;gap:16px}
+.pbody h3{font-size:14px;font-weight:700;margin-bottom:6px}
+.label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.presets{display:flex;flex-direction:column;gap:6px}
+.preset{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.preset[aria-pressed="true"]{border-color:var(--accent)}
+.preset .dot{grid-row:span 2;width:10px;height:10px;border-radius:50%;margin-top:5px;border:2px solid var(--muted)}
+.preset[aria-pressed="true"] .dot{background:var(--accent);border-color:var(--accent)}
+.preset b{font-weight:600}
+.preset span{color:var(--muted);font-size:12.5px}
+.toggle{display:flex;align-items:flex-start;gap:10px;font-size:13px}
+.toggle input{margin-top:3px;accent-color:var(--accent)}
+.toggle small{display:block;color:var(--muted);font-size:12px}
+.field{display:flex;align-items:center;gap:10px;font-size:13px}
+.field select{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+textarea{width:100%;min-height:300px;background:#0A0D12;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12px;line-height:1.55;resize:vertical}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.msg{font-size:12.5px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2)}
+.msg.err{border-color:rgba(227,107,107,.5);color:#F2B1B1}
+.msg.ok{border-color:rgba(92,201,139,.45);color:#B7EBCB}
+.msg.pend{border-color:rgba(242,193,78,.45);color:#F4DDA2}
+.vtable{width:100%;border-collapse:collapse;font-size:12px}
+.vtable td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.vtable td:first-child{color:var(--muted);font-variant-numeric:tabular-nums;width:24px}
+.vtable code{font-family:var(--mono);font-size:11.5px}
+.st{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;white-space:nowrap}
+.st.ok{background:rgba(92,201,139,.14);color:var(--ok)}
+.st.bad{background:rgba(227,107,107,.14);color:var(--bad)}
+.st.warn{background:rgba(240,140,90,.14);color:var(--warn)}
+.st.na{background:rgba(143,153,170,.14);color:var(--muted)}
+.scroll{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+details summary{cursor:pointer;color:var(--muted);font-size:12.5px}
+.cat{display:flex;flex-direction:column;margin-top:8px}
+.cat div{display:flex;align-items:center;gap:8px;padding:4px 6px;border-bottom:1px solid var(--line);font-size:12px}
+.cat code{font-family:var(--mono);font-size:11px;color:var(--muted);width:64px;flex:none}
+.cat span{flex:1;min-width:0}
+.cat button{background:none;border:1px solid var(--line);border-radius:5px;padding:1px 8px;font-size:11px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.check{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:start;font-size:12.5px;padding:8px 10px;background:var(--panel2);border-radius:8px}
+.check code{font-family:var(--mono);color:var(--muted);font-size:11.5px}
+.check .d{color:var(--muted);font-size:12px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--panel2);border-radius:8px;padding:10px}
+.kpi .v{font-family:var(--display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:11.5px;color:var(--muted)}
+.log{font-family:var(--mono);font-size:11px;line-height:1.6;max-height:220px;overflow:auto;background:#0A0D12;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.log div{white-space:pre-wrap;word-break:break-word}
+.log .t{color:var(--muted)}
+.log .w{color:var(--warn)}
+.log .e{color:var(--info)}
+.stable{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.stable th{text-align:left;color:var(--muted);font-weight:500;font-size:11px;padding:4px 6px;border-bottom:1px solid var(--line)}
+.stable td{padding:4px 6px;border-bottom:1px solid var(--line)}
+</style>
+
+<header class="top">
+  <div>
+    <h1>Spotlight Curated Rail</h1>
+    <p>Working prototype of the StreamLine PRD. Try the Wanderer flow on the device, then change the feed on the right.</p>
+  </div>
+  <div class="flow"><b>See</b> → <b>Pick</b> → <b>Watch</b></div>
+</header>
+
+<main class="shell">
+  <section class="stage" aria-label="Device preview">
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Device">
+        <button id="dev-mobile" data-dev="mobile" aria-pressed="true">Mobile</button>
+        <button id="dev-tv" data-dev="tv" aria-pressed="false">TV</button>
+      </div>
+      <button class="btn" id="reopen">Reopen app</button>
+      <button class="btn" id="hour">+1 hour</button>
+      <span class="clock" id="clock"></span>
+    </div>
+    <div class="hint" id="devhint"></div>
+    <div class="frame-wrap"><div class="frame mobile" id="frame"><div class="app" id="app"></div></div></div>
+  </section>
+
+  <aside class="panel">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-scn" data-tab="scn" aria-selected="true">Scenarios</button>
+      <button role="tab" id="tab-feed" data-tab="feed" aria-selected="false">Curator feed</button>
+      <button role="tab" id="tab-eval" data-tab="eval" aria-selected="false">Checks &amp; evals</button>
+    </div>
+    <div class="pbody" id="pbody"></div>
+  </aside>
+</main>
+
+<script>
+/* ---------- Catalog (fictional) ---------- */
+const CATALOG = [
+ /* Spotlight picks: human-curated, all from the feed */
+ ["SL-1001","Past Lives",2023,"1h 46m","Drama · Romance","Celine Song","Two childhood friends from Seoul reconnect in New York twenty years later, over one week that asks what might have been.","For anyone who has ever wondered about the road not taken. Bring tissues."],
+ ["SL-1002","Aftersun",2022,"1h 42m","Drama","Charlotte Wells","A woman looks back on a late-'90s holiday in Turkey with her young father, trying to understand the man he was.","Quiet on the surface and devastating underneath. The last ten minutes stay with you."],
+ ["SL-1003","Portrait of a Lady on Fire",2019,"2h 2m","Drama · Romance · French","Céline Sciamma","Brittany, 1770. A painter is hired to secretly paint the wedding portrait of a young woman who refuses to sit for it.","A slow, gorgeous French drama. Every frame looks like a painting."],
+ ["SL-1004","Perfect Days",2023,"2h 4m","Drama · Japanese","Wim Wenders","A Tokyo toilet cleaner finds contentment in his routines: cassette tapes, paperbacks and photographing trees.","Our pick for a quiet Sunday. Two hours that feel like a deep breath."],
+ ["SL-1005","The Holdovers",2023,"2h 13m","Comedy-Drama","Alexander Payne","A cranky boarding-school teacher is stuck minding a troubled student over Christmas break in 1970.","Funny, prickly and warm. It feels like a lost '70s classic."],
+ ["SL-1006","Paterson",2016,"1h 58m","Drama","Jim Jarmusch","One week in the life of a New Jersey bus driver who writes poetry in his lunch breaks.","Proof that a film about an ordinary week can be extraordinary."],
+ ["SL-1007","Columbus",2017,"1h 44m","Drama","Kogonada","In Columbus, Indiana, a young woman and a visiting translator bond over the town's modernist buildings.","A hidden gem for anyone who loves architecture, or long walks and longer talks."],
+ ["SL-1008","Minari",2020,"1h 55m","Drama","Lee Isaac Chung","A Korean American family moves to rural Arkansas in the 1980s to start a farm.","A tender family story with a grandmother you will never forget.",{locked:["UK"]}],
+ ["SL-1009","The Farewell",2019,"1h 40m","Comedy-Drama","Lulu Wang","A family stages a wedding so they can say goodbye to their grandmother, who doesn't know she is ill.","A family comedy with a lump in its throat."],
+ ["SL-1010","Drive My Car",2021,"2h 59m","Drama · Japanese","Ryusuke Hamaguchi","A widowed actor directing a play in Hiroshima forms an unexpected bond with his quiet young driver.","Three hours that fly by. Set aside an evening and let it work on you."],
+ ["SL-1011","Shoplifters",2018,"2h 1m","Drama · Japanese","Hirokazu Kore-eda","A makeshift Tokyo family that gets by on petty theft takes in a neglected little girl.","What makes a family? This one will change your answer."],
+ ["SL-1012","My Octopus Teacher",2020,"1h 25m","Documentary","Pippa Ehrlich, James Reed","A filmmaker spends a year visiting a wild octopus in a South African kelp forest.","The nature documentary people text their friends about."],
+ ["SL-1013","Honeyland",2019,"1h 26m","Documentary","Tamara Kotevska, Ljubomir Stefanov","One of the last wild beekeepers in North Macedonia, and the new neighbours who upset her balance.","Feels like fiction, but every moment is real."],
+ ["SL-1014","The Worst Person in the World",2021,"2h 8m","Comedy-Drama · Norwegian","Joachim Trier","Four years in the life of Julie, a young woman in Oslo working out love, work and who she wants to be.","Messy, funny and true. The best film about being almost 30."],
+ ["SL-1015","Petite Maman",2021,"1h 12m","Drama · French","Céline Sciamma","After her grandmother dies, eight-year-old Nelly meets a girl in the woods who is exactly her age.","Only 72 minutes, and pure magic."],
+ ["SL-1016","Hunt for the Wilderpeople",2016,"1h 41m","Adventure · Comedy","Taika Waititi","A defiant foster kid and his grumpy foster uncle go on the run in the New Zealand bush.","The feel-good adventure to watch with anyone, any night."],
+ ["SL-1017","Arrival",2016,"1h 56m","Sci-Fi","Denis Villeneuve","A linguist is recruited to find a way to talk with mysterious visitors after twelve alien ships land.","Sci-fi for people who think they don't like sci-fi."],
+ ["SL-1018","Paddington 2",2017,"1h 43m","Family · Comedy","Paul King","Paddington is framed for stealing a rare pop-up book and ends up in prison.","Kind, clever and very funny. Adults love it as much as kids do."],
+ ["SL-1019","Fallen Leaves",2023,"1h 21m","Comedy · Romance · Finnish","Aki Kaurismäki","Two lonely workers in Helsinki keep almost finding each other.","A deadpan love story that sneaks up on you."],
+ ["SL-1020","Anatomy of a Fall",2023,"2h 31m","Legal Thriller · French","Justine Triet","A writer is put on trial for her husband's death, and their son becomes the key witness.","A courtroom drama you'll argue about afterwards."],
+ ["SL-1021","Roma",2018,"2h 15m","Drama · Spanish","Alfonso Cuarón","A year in the life of a live-in housekeeper for a middle-class family in 1970s Mexico City.","",{delisted:true}],
+ ["SL-1022","Moonrise Kingdom",2012,"1h 34m","Comedy · Romance","Wes Anderson","Two twelve-year-olds fall in love and run away together on a New England island in 1965.","A storybook adventure with perfect symmetry."],
+ /* Existing catalog used by the algorithmic rows */
+ ["SL-2001","Fast X",2023,"2h 21m","Action","Louis Leterrier","Dom Toretto and his family face a vengeful enemy from their past.",""],
+ ["SL-2002","F9",2021,"2h 23m","Action","Justin Lin","Dom's crew takes on a skilled assassin who turns out to be his estranged brother.",""],
+ ["SL-2003","Furious 7",2015,"2h 17m","Action","James Wan","The crew is hunted by the brother of a criminal they took down.",""],
+ ["SL-2004","The Fate of the Furious",2017,"2h 16m","Action","F. Gary Gray","A mysterious hacker forces Dom to turn against his own crew.",""],
+ ["SL-2005","Hobbs & Shaw",2019,"2h 17m","Action","David Leitch","An unlikely pair of rivals team up to stop a cyber-enhanced villain.",""],
+ ["SL-2006","Fast Five",2011,"2h 10m","Action","Justin Lin","Dom and Brian plan one last heist in Rio de Janeiro.",""],
+ ["SL-2007","Top Gun: Maverick",2022,"2h 11m","Action","Joseph Kosinski","Maverick returns to train a group of young pilots for a dangerous mission.",""],
+ ["SL-2008","Oppenheimer",2023,"3h 0m","Drama · History","Christopher Nolan","The story of J. Robert Oppenheimer and the building of the atomic bomb.",""],
+ ["SL-2009","Barbie",2023,"1h 54m","Comedy","Greta Gerwig","Barbie leaves Barbieland for the real world after an existential crisis.",""],
+ ["SL-2010","Dune: Part Two",2024,"2h 46m","Sci-Fi","Denis Villeneuve","Paul Atreides joins the Fremen and seeks revenge on those who destroyed his family.",""],
+ ["SL-2011","John Wick: Chapter 4",2023,"2h 49m","Action","Chad Stahelski","John Wick takes on the High Table in a fight across three continents.",""],
+ ["SL-2012","Everything Everywhere All at Once",2022,"2h 19m","Sci-Fi · Comedy","Daniel Kwan, Daniel Scheinert","A laundromat owner is pulled into a multiverse adventure in the middle of a tax audit.",""],
+ ["SL-2013","The Bear",2023,"S2 · 10 ep","Series · Drama","Christopher Storer","A fine-dining chef comes home to run his late brother's Chicago sandwich shop.",""],
+ ["SL-2014","Severance",2022,"S1 · 9 ep","Series · Sci-Fi","Dan Erickson","Office workers have their work memories surgically separated from their personal lives.",""],
+ ["SL-2015","Ted Lasso",2023,"S3 · 12 ep","Series · Comedy","","An American football coach is hired to manage an English Premier League team.",""],
+ ["SL-2016","Planet Earth II",2016,"6 ep","Series · Documentary","","Narrated by David Attenborough, a look at wildlife in islands, mountains, jungles, deserts, grasslands and cities.",""]
+];
+const CAT = {};
+CATALOG.forEach(([id,t,y,rt,g,dir,syn,note,flags])=>CAT[id]={id,t,y,rt,g,dir,syn,note,...(flags||{})});
+
+/* Existing algorithmic rows: fixed, never touched by Spotlight (FR7) */
+const ALGO_ROWS = [
+  {id:"cw", name:"Continue Watching", ids:["SL-2013","SL-2014","SL-2008","SL-2016"], prog:[62,35,48,18]},
+  {id:"byw", name:"Because you watched Fast X", ids:["SL-2002","SL-2003","SL-2004","SL-2005","SL-2006"]},
+  {id:"trend", name:"Trending Now", ids:["SL-2010","SL-2008","SL-2009","SL-2007","SL-2011","SL-2012"]},
+  {id:"new", name:"New on StreamLine", ids:["SL-2010","SL-2015","SL-2011","SL-2014","SL-2009","SL-2007"]}
+];
+const BASELINE_SIG = ALGO_ROWS.map(r=>r.id+":"+r.ids.join(",")).join("|");
+
+/* ---------- Feeds ---------- */
+const HEADER = "title_id,title_name";
+const feed = rows => HEADER+"\n"+rows.map(id=>id+","+(CAT[id]?CAT[id].t:"")).join("\n");
+const DEFAULT_ROWS = ["SL-1001","SL-1004","SL-1002","SL-1003","SL-1013","SL-1005","SL-1014","SL-1008","SL-1010","SL-1016","SL-1021","SL-1009","SL-1012","SL-1019","SL-1015","SL-1O17","SL-1006","SL-1011","SL-1001","SL-1020"];
+const DEFAULT_FEED = feed(DEFAULT_ROWS).replace("SL-1O17,","SL-1O17,Arrival");
+const PRESETS = [
+  {id:"healthy", name:"Healthy feed", desc:"20 picks from the curation team. 3 are dropped by the guard: Past Lives listed twice, a typo in Arrival's ID, and Roma (rights expired). 17 show.", feed:DEFAULT_FEED, fail:false},
+  {id:"short", name:"Only 12 titles in the feed", desc:"Below the 15-title minimum. The rail hides and home looks like today.", feed:feed(["SL-1001","SL-1004","SL-1002","SL-1003","SL-1013","SL-1005","SL-1014","SL-1010","SL-1016","SL-1009","SL-1012","SL-1019"]), fail:false},
+  {id:"heavy", name:"Heavy filtering (UK viewer)", desc:"15 rows, but 4 are bad: a duplicate, an unknown ID, Roma (delisted) and Minari (not licensed in the UK). 11 remain, so the rail hides.", feed:feed(["SL-1001","SL-1004","SL-1002","SL-1021","SL-1003","SL-1013","SL-9999","SL-1005","SL-1014","SL-1001","SL-1010","SL-1016","SL-1009","SL-1008","SL-1012"]), fail:false, region:"UK"},
+  {id:"empty", name:"Feed empty at launch", desc:"The editor has not filled it in yet. No rail, no empty row.", feed:HEADER+"\n", fail:false},
+  {id:"fail", name:"Feed fails to load", desc:"The feed request times out. The rail is left out silently.", feed:DEFAULT_FEED, fail:true}
+];
+
+/* ---------- State (plain local state only) ---------- */
+const S = {
+  device:"mobile", region:"US", badge:false, fail:false, preset:"healthy",
+  liveFeed:DEFAULT_FEED, pendingFeed:null, pendingAt:null, publishedAt:null,
+  editorText:DEFAULT_FEED, editorMsg:null,
+  clock:Date.now(), session:0, sessionStart:0, sessions:[], prevRailIds:null, feedChangedSinceOpen:false,
+  rail:null, screen:"home", cur:null, homeScroll:0, rowScroll:{}, lastFocusId:null, lastFocusRow:null,
+  seen:{mobile:false,tv:false}, checks:{}, log:[], tab:"scn", player:null
+};
+
+/* ---------- Helpers ---------- */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtClock = t=>new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+function hash(s){let x=2166136261;for(const c of s){x^=c.charCodeAt(0);x=Math.imul(x,16777619)>>>0}return x}
+const GENRE_HUE=[["Documentary",150],["Sci-Fi",255],["Action",12],["Thriller",285],["Family",32],["Comedy",38],["Romance",340],["Adventure",95],["History",25],["Drama",205]];
+function art(id){
+  const c=CAT[id]||{g:""}, x=hash(id);
+  const base=(GENRE_HUE.find(([k])=>c.g.includes(k))||["",210])[1];
+  const a=(base+(x%40)-20+360)%360, b=(a+25+(x>>9)%40)%360, px=20+(x>>4)%60, py=18+(x>>13)%40;
+  const motif = x%3===0
+    ? `radial-gradient(circle at ${px}% ${py}%, hsl(${a} 85% 72% / .85) 0 14%, hsl(${a} 80% 60% / .35) 15%, transparent 42%)`
+    : x%3===1
+    ? `linear-gradient(180deg, transparent ${50+(x>>5)%15}%, hsl(${b} 60% 40% / .55) ${51+(x>>5)%15}%, transparent 85%)`
+    : `radial-gradient(ellipse at ${px}% 105%, hsl(${a} 80% 60% / .7), transparent 55%)`;
+  return `${motif}, radial-gradient(circle at 50% 40%, transparent 40%, rgba(0,0,0,.45)), linear-gradient(170deg, hsl(${a} 45% 30%), hsl(${b} 55% 9%))`;
+}
+function log(msg, cls=""){
+  S.log.unshift({t:fmtClock(S.clock), msg, cls});
+  if(S.log.length>120) S.log.pop();
+  if(S.tab==="eval") renderPanel();
+}
+function parseFeed(text){
+  return text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith("#") && !/^title_id\b/i.test(l))
+    .map(l=>l.split(",")[0].trim().toUpperCase());
+}
+/* Validation guard: dedupe, unknown IDs, delisted, region-locked; min 15 valid */
+function buildRail(text, region){
+  const ids=parseFeed(text), seen=new Set(), rows=[], tiles=[];
+  ids.forEach((id,i)=>{
+    const c=CAT[id]; let st="ok";
+    if(seen.has(id)) st="duplicate";
+    else if(!c) st="unknown";
+    else if(c.delisted) st="delisted";
+    else if(c.locked && c.locked.includes(region)) st="region";
+    seen.add(id);
+    rows.push({pos:i+1,id,st,name:c?c.t:null});
+    if(st==="ok") tiles.push(id);
+  });
+  let suppressed=false, reason="";
+  if(ids.length===0){suppressed=true;reason="feed is empty"}
+  else if(tiles.length<15){suppressed=true;reason=`only ${tiles.length} valid titles (minimum 15)`}
+  return {rows, tiles:tiles.slice(0,20), suppressed, reason, total:ids.length};
+}
+const ST_LABEL = {ok:["Shows","ok"],duplicate:["Duplicate · dropped","warn"],unknown:["Unknown ID · dropped","bad"],delisted:["Delisted · dropped","bad"],region:["Region-locked · hidden","warn"]};
+
+/* ---------- App lifecycle ---------- */
+function openApp(reason){
+  S.session++;
+  stopPlayer();
+  if(S.pendingFeed!==null){ S.liveFeed=S.pendingFeed; S.pendingFeed=null; S.pendingAt=null; S.feedChangedSinceOpen=true; log("Curator update picked up on app open","e"); }
+  S.screen="home"; S.cur=null; S.homeScroll=0; S.rowScroll={}; S.lastFocusId=null;
+  S.seen[S.device]=true;
+  log(`app_open · session ${S.session} · ${S.device} · region ${S.region}${reason?" · "+reason:""}`,"e");
+  loadFeed();
+  S.sessionStart=performance.now();
+  S.sessions.push({n:S.session, device:S.device, rail:!S.rail.suppressed, time:null, src:null});
+  S.feedChangedSinceOpen=false;
+  render();
+}
+function loadFeed(){
+  if(S.fail){
+    S.rail={rows:[],tiles:[],suppressed:true,reason:"feed request timed out",total:0,failed:true};
+    log("feed_load failed (timeout) → rail omitted, home falls back to algorithmic rows","w");
+    return;
+  }
+  S.rail=buildRail(S.liveFeed,S.region);
+  S.rail.rows.filter(r=>r.st==="duplicate").forEach(r=>log(`curator warning: ${r.id} listed twice (row ${r.pos}); first occurrence kept`,"w"));
+  S.rail.rows.filter(r=>r.st==="unknown").forEach(r=>log(`guard: row ${r.pos} ID "${r.id}" not in catalog → dropped`,"w"));
+  S.rail.rows.filter(r=>r.st==="delisted").forEach(r=>log(`guard: ${r.id} is delisted → dropped automatically`,"w"));
+  S.rail.rows.filter(r=>r.st==="region").forEach(r=>log(`guard: ${r.id} not licensed in ${S.region} → hidden for this viewer`,"w"));
+  if(S.rail.suppressed) log(`rail_suppressed · ${S.rail.reason}`,"w");
+  else {
+    const ids=S.rail.tiles.join(",");
+    const same=S.prevRailIds===ids;
+    log(`rail_rendered · ${S.rail.tiles.length} titles${S.prevRailIds && same?" · same list as last open":""}`);
+    S.prevRailIds=ids;
+  }
+}
+function advanceHour(){
+  S.clock+=3600e3;
+  log("clock +1 hour");
+  if(S.pendingFeed!==null && S.clock>=S.pendingAt){
+    S.liveFeed=S.pendingFeed; S.pendingFeed=null; S.pendingAt=null;
+    log("Curator update went live (1-hour window)","e");
+    if(S.screen==="home") saveScroll();
+    loadFeed(); render();
+  } else { updateClock(); renderPanel(); }
+}
+
+/* ---------- Rendering: device ---------- */
+function tileHTML(id, src, extra=""){
+  const c=CAT[id];
+  return `<button class="tile ${src==="spotlight"?"spot":""}" data-act="open" data-id="${id}" data-src="${src}" aria-label="${esc(c.t)}"><span class="poster" style="background:${art(id)}"><span class="py">${c.y}</span><span class="pt">${esc(c.t)}</span>${c.dir?`<span class="pd">${esc(c.dir.split(",")[0])}</span>`:""}${extra}</span></button>`;
+}
+function homeHTML(){
+  let h="";
+  if(!S.rail.suppressed){
+    h+=`<section class="row" data-row="spotlight"><div class="row-head spot-head"><h2>Spotlight</h2><span class="qual">✦ Curated especially for you</span>${S.badge?`<span class="chip-hp">Hand-picked</span><span class="sub">by the StreamLine editors</span>`:""}</div><div class="rail" data-rowid="spotlight">${S.rail.tiles.map(id=>tileHTML(id,"spotlight")).join("")}</div></section>`;
+  }
+  ALGO_ROWS.forEach(r=>{
+    h+=`<section class="row" data-row="${r.id}" data-algo><div class="row-head"><h2>${esc(r.name)}</h2></div><div class="rail" data-rowid="${r.id}">${r.ids.map((id,i)=>tileHTML(id,r.id, r.prog?`<span class="prog" style="width:${r.prog[i]}%"></span>`:"")).join("")}</div></section>`;
+  });
+  return h;
+}
+function detailHTML(){
+  const c=CAT[S.cur];
+  return `<div class="detail"><div class="hero" style="background:${art(c.id)}"><button class="back" data-act="back" id="d-back">← Back</button></div>
+    <div class="dbody"><h2>${esc(c.t)}</h2><div class="meta">${c.y} · ${esc(c.rt)} · ${esc(c.g)}</div>${c.dir?`<div class="meta">${/^Series/.test(c.g)?"Created by":"Directed by"} ${esc(c.dir)}</div>`:""}<p class="syn">${esc(c.syn)}</p>${S.fromSpot&&c.note?`<div class="enote"><span>✦ Why our editors picked it</span>${esc(c.note)}</div>`:""}
+    <button class="play" data-act="play" id="d-play">▶ Play</button></div></div>`;
+}
+function render(){
+  const app=$("#app"), frame=$("#frame");
+  frame.className="frame "+S.device;
+  app.className="app "+S.device;
+  const head=`<div class="app-head"><span class="logo">Stream<i>Line</i></span><nav class="tvnav"><span>Home</span><span>Search</span><span>Movies</span><span>Series</span><span>My List</span></nav></div>`;
+  const tabs=`<div class="tabbar"><span>Home</span><span>Search</span><span>My List</span><span>Profile</span></div>`;
+  if(S.screen==="player"){ /* player overlays detail */ }
+  app.innerHTML = head + `<div class="viewport" id="vp">${S.screen==="home"?homeHTML():detailHTML()}</div>` + tabs + (S.screen==="player"?playerHTML():"");
+  if(S.screen==="home"){ restoreScroll(); runHomeChecks(); }
+  if(S.screen==="detail"){ $("#vp").scrollTop=0; if(S.device==="tv") $("#d-play").focus({preventScroll:true}); }
+  if(S.screen==="player") startPlayer();
+  $("#devhint").textContent = S.device==="tv" ? "TV remote: arrow keys to move, Enter to select, Esc to go back." : "Tap a tile to open it. Swipe or scroll rows sideways.";
+  document.querySelectorAll("[data-dev]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.dev===S.device));
+  updateClock(); renderPanel();
+}
+function saveScroll(){
+  const vp=$("#vp"); if(!vp) return;
+  S.homeScroll=vp.scrollTop;
+  document.querySelectorAll("#app .rail").forEach(r=>S.rowScroll[r.dataset.rowid]=r.scrollLeft);
+}
+function restoreScroll(){
+  const vp=$("#vp");
+  document.querySelectorAll("#app .rail").forEach(r=>{ if(S.rowScroll[r.dataset.rowid]!=null) r.scrollLeft=S.rowScroll[r.dataset.rowid]; });
+  vp.scrollTop=S.homeScroll;
+  if(S.device==="tv"){
+    let t = S.lastFocusId && document.querySelector(`#app .rail[data-rowid="${S.lastFocusRow}"] .tile[data-id="${S.lastFocusId}"]`);
+    if(!t) t=document.querySelector("#app .tile");
+    if(t) t.focus({preventScroll:true});
+    vp.scrollTop=S.homeScroll;
+  }
+}
+function runHomeChecks(){
+  const rows=[...document.querySelectorAll("#app .row")];
+  const railShown=!S.rail.suppressed;
+  const first=rows[0] && rows[0].dataset.row;
+  const algoSig=rows.filter(r=>r.hasAttribute("data-algo")).map(r=>r.dataset.row+":"+[...r.querySelectorAll(".tile")].map(t=>t.dataset.id).join(",")).join("|");
+  const spotIds=[...document.querySelectorAll('#app .rail[data-rowid="spotlight"] .tile')].map(t=>t.dataset.id);
+  const feedIds=new Set(parseFeed(S.liveFeed));
+  const badTiles=spotIds.filter(id=>!CAT[id]||CAT[id].delisted||(CAT[id].locked||[]).includes(S.region));
+  S.checks={
+    railShown, first, n:spotIds.length,
+    fr1: railShown ? first==="spotlight" : null,
+    fr2: railShown ? (spotIds.length>=15 && spotIds.length<=20 && spotIds.every(id=>feedIds.has(id))) : null,
+    fr5: S.rail.suppressed ? !document.querySelector('#app [data-row="spotlight"]') : null,
+    fr7: algoSig===BASELINE_SIG,
+    badTiles:badTiles.length
+  };
+}
+
+/* ---------- Player ---------- */
+function toSec(rt){ const m=rt.match(/(\d+)h\s*(\d+)m/); return m? (+m[1]*3600 + +m[2]*60) : 42*60; }
+const fmtT = s=>{s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0")};
+function playerHTML(){
+  const c=CAT[S.cur];
+  return `<div class="player"><div class="video" id="video" style="background:${art(c.id)}"></div>
+    <div class="ptop"><button class="back" data-act="back" id="p-back">← Back</button><span class="ptitle">${esc(c.t)}</span></div>
+    <div class="pbot"><div class="bar"><i id="pbar"></i></div><div class="pctl"><button class="pp" data-act="pause" id="p-pause" aria-label="Pause">❚❚</button><span id="ptime">0:00 / ${fmtT(toSec(c.rt))}</span></div></div></div>`;
+}
+function startPlayer(){
+  stopPlayer();
+  const dur=toSec(CAT[S.cur].rt);
+  S.player={pos:0,dur,paused:false,iv:setInterval(()=>{
+    if(S.player.paused) return;
+    S.player.pos+=0.25;
+    const b=$("#pbar"), t=$("#ptime"); if(!b) return;
+    b.style.width=(S.player.pos/dur*100)+"%"; t.textContent=fmtT(S.player.pos)+" / "+fmtT(dur);
+  },250)};
+  if(S.device==="tv") $("#p-pause").focus({preventScroll:true});
+}
+function stopPlayer(){ if(S.player){clearInterval(S.player.iv); S.player=null;} }
+
+/* ---------- Device interactions ---------- */
+$("#app").addEventListener("click", e=>{
+  const el=e.target.closest("[data-act]"); if(!el) return;
+  const act=el.dataset.act;
+  if(act==="open"){
+    saveScroll();
+    S.lastFocusId=el.dataset.id; S.lastFocusRow=el.dataset.src;
+    const src=el.dataset.src==="spotlight"?"Spotlight":ALGO_ROWS.find(r=>r.id===el.dataset.src).name;
+    const sess=S.sessions[S.sessions.length-1];
+    if(sess && sess.time===null){ sess.time=(performance.now()-S.sessionStart)/1000; sess.src=el.dataset.src==="spotlight"?"Spotlight":"Algorithmic row"; }
+    log(`tile_select · ${el.dataset.id} · from ${src} · 1 tap`);
+    S.cur=el.dataset.id; S.fromSpot=el.dataset.src==="spotlight"; S.screen="detail"; log(`detail_view · ${S.cur}`); render();
+  } else if(act==="back") goBack();
+  else if(act==="play"){ S.screen="player"; log(`playback_start · ${S.cur} (background event, no UI)`,"e"); render(); }
+  else if(act==="pause"){ S.player.paused=!S.player.paused; el.textContent=S.player.paused?"▶":"❚❚"; el.setAttribute("aria-label",S.player.paused?"Play":"Pause"); $("#video").classList.toggle("paused",S.player.paused); }
+});
+function goBack(){
+  if(S.screen==="player"){ stopPlayer(); S.screen="detail"; render(); }
+  else if(S.screen==="detail"){ S.screen="home"; render(); log("back → home (scroll position restored)"); }
+}
+/* TV remote navigation */
+document.addEventListener("keydown", e=>{
+  if(S.device!=="tv") return;
+  if(e.target.closest("textarea,input,select")) return;
+  const inApp=$("#frame").contains(document.activeElement);
+  if(!inApp && !["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)) return;
+  if(e.key==="Escape"||e.key==="Backspace"){ e.preventDefault(); goBack(); return; }
+  if(S.screen!=="home") return;
+  const arrows=["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"]; if(!arrows.includes(e.key)) return;
+  e.preventDefault();
+  const cur=inApp && document.activeElement.classList.contains("tile") ? document.activeElement : null;
+  if(!cur){ const f=document.querySelector("#app .tile"); f&&f.focus(); return; }
+  const rails=[...document.querySelectorAll("#app .rail")], rail=cur.closest(".rail"), ri=rails.indexOf(rail);
+  const tiles=[...rail.querySelectorAll(".tile")], ti=tiles.indexOf(cur);
+  let next=null;
+  if(e.key==="ArrowRight") next=tiles[ti+1];
+  if(e.key==="ArrowLeft") next=tiles[ti-1];
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){ const r=rails[ri+(e.key==="ArrowDown"?1:-1)]; if(r){ const t=[...r.querySelectorAll(".tile")]; next=t[Math.min(ti,t.length-1)]; } }
+  if(next){ next.focus({preventScroll:true}); next.scrollIntoView({block:"nearest",inline:"nearest",behavior:"smooth"}); }
+});
+
+/* ---------- Toolbar ---------- */
+document.querySelectorAll("[data-dev]").forEach(b=>b.addEventListener("click",()=>{ if(S.device===b.dataset.dev) return; S.device=b.dataset.dev; openApp("switched device"); }));
+$("#reopen").addEventListener("click",()=>openApp());
+$("#hour").addEventListener("click",advanceHour);
+function updateClock(){ $("#clock").textContent=`Session ${S.session} · ${fmtClock(S.clock)}`; }
+
+/* ---------- Panel ---------- */
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ S.tab=b.dataset.tab; document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-selected",x===b)); renderPanel(); }));
+function renderPanel(){
+  const p=$("#pbody");
+  if(S.tab==="scn") p.innerHTML=scnHTML();
+  else if(S.tab==="feed"){ if(!p.querySelector("#feedtext")) p.innerHTML=feedHTML(); else refreshFeedPreview(); }
+  else p.innerHTML=evalHTML();
+}
+function scnHTML(){
+  return `<div><div class="label">Feed state</div><p class="hint" style="margin:4px 0 8px">Each scenario reopens the app so you can see what a Wanderer would see.</p>
+  <div class="presets">${PRESETS.map(pr=>`<button class="preset" data-preset="${pr.id}" id="pre-${pr.id}" aria-pressed="${S.preset===pr.id}"><span class="dot"></span><b>${esc(pr.name)}</b><span>${esc(pr.desc)}</span></button>`).join("")}</div></div>
+  <div class="field"><label for="region">Viewer region</label><select id="region"><option ${S.region==="US"?"selected":""}>US</option><option ${S.region==="UK"?"selected":""}>UK</option></select><span class="hint">Minari isn't licensed in the UK.</span></div>
+  <label class="toggle"><input type="checkbox" id="badge" ${S.badge?"checked":""}><span>Show "Hand-picked" label<small>Should Have, per the decision log. Off by default.</small></span></label>
+  <div class="msg">Now showing: <b>${S.rail.suppressed?"No Spotlight rail":"Spotlight with "+S.rail.tiles.length+" titles"}</b>${S.rail.suppressed?" ("+esc(S.rail.reason)+")":""}.</div>`;
+}
+$("#pbody").addEventListener("click", e=>{
+  const pr=e.target.closest("[data-preset]");
+  if(pr){ const P=PRESETS.find(x=>x.id===pr.dataset.preset); S.preset=P.id; S.fail=P.fail; S.region=P.region||"US";
+    S.liveFeed=P.feed; S.editorText=P.feed; S.pendingFeed=null; S.pendingAt=null; S.editorMsg=null; openApp("scenario: "+P.name); return; }
+  const add=e.target.closest("[data-add]");
+  if(add){ const ta=$("#feedtext"); ta.value=ta.value.replace(/\s*$/,"")+"\n"+add.dataset.add+","+CAT[add.dataset.add].t; S.editorText=ta.value; refreshFeedPreview(); return; }
+  if(e.target.id==="publish") publishFeed();
+  if(e.target.id==="revert"){ S.editorText=S.liveFeed; S.editorMsg=null; $("#pbody").innerHTML=feedHTML(); }
+});
+$("#pbody").addEventListener("change", e=>{
+  if(e.target.id==="region"){ S.region=e.target.value; openApp("region changed"); }
+  if(e.target.id==="badge"){ S.badge=e.target.checked; if(S.screen==="home"){ saveScroll(); render(); } }
+});
+$("#pbody").addEventListener("input", e=>{ if(e.target.id==="feedtext"){ S.editorText=e.target.value; S.editorMsg=null; refreshFeedPreview(); } });
+
+function feedHTML(){
+  return `<div><h3>Spotlight feed</h3><p class="hint" style="margin:0">A plain CSV the curation team edits. One row per title, in rail order. Reorder by moving lines. No deploy needed.</p></div>
+  <textarea id="feedtext" spellcheck="false" aria-label="Spotlight feed CSV">${esc(S.editorText)}</textarea>
+  <div class="actions"><button class="btn primary" id="publish">Publish feed</button><button class="btn" id="revert">Revert to live</button><span class="hint" id="rowcount"></span></div>
+  <div id="feedmsg"></div>
+  <div><div class="label" style="margin-bottom:6px">Preview for a ${S.region} viewer</div><div class="scroll"><table class="vtable" id="vtable"></table></div><div class="hint" id="vsum" style="margin-top:6px"></div></div>
+  <details><summary>Catalog reference (add a title)</summary><div class="cat">${CATALOG.map(([id,t])=>`<div><code>${id}</code><span>${esc(t)}${CAT[id].delisted?' <span class="st bad">delisted</span>':""}${CAT[id].locked?' <span class="st warn">not in '+CAT[id].locked.join(", ")+'</span>':""}</span><button data-add="${id}" aria-label="Add ${esc(t)}">Add</button></div>`).join("")}</div></details>`;
+}
+function refreshFeedPreview(){
+  const r=buildRail(S.editorText,S.region);
+  const tb=$("#vtable"); if(!tb) return;
+  tb.innerHTML = r.rows.length? r.rows.map(x=>`<tr><td>${x.pos}</td><td><code>${esc(x.id)}</code><br>${x.name?esc(x.name):'<span class="hint">not in catalog</span>'}</td><td><span class="st ${ST_LABEL[x.st][1]}">${ST_LABEL[x.st][0]}</span></td></tr>`).join("") : `<tr><td></td><td class="hint">No rows yet.</td><td></td></tr>`;
+  const n=r.total, over=n>20, under=n<15;
+  $("#rowcount").textContent=`${n} / 20 rows`;
+  $("#rowcount").style.color = over||under ? "var(--bad)" : "";
+  $("#vsum").innerHTML = r.suppressed ? `<span class="st bad">Rail would be hidden</span> ${esc(r.reason)}.` : `<span class="st ok">Rail shows ${r.tiles.length} titles</span> ${r.total-r.tiles.length} dropped by the guard.`;
+  const m=$("#feedmsg");
+  let msg=S.editorMsg;
+  if(!msg && S.pendingFeed!==null) msg={cls:"pend",text:`Published at ${fmtClock(S.publishedAt)}. Goes live on the next app open, or by ${fmtClock(S.pendingAt)} at the latest.`};
+  m.innerHTML = msg? `<div class="msg ${msg.cls}">${msg.text}</div>` : "";
+}
+function publishFeed(){
+  const n=parseFeed(S.editorText).length;
+  if(n>20){ S.editorMsg={cls:"err",text:`The feed has ${n} rows and the maximum is 20. Remove ${n-20} before publishing.`}; refreshFeedPreview(); return; }
+  if(n<15){ S.editorMsg={cls:"err",text:`The feed has ${n} rows and the minimum is 15. Add ${15-n} before publishing.`}; refreshFeedPreview(); return; }
+  S.pendingFeed=S.editorText; S.publishedAt=S.clock; S.pendingAt=S.clock+3600e3; S.editorMsg=null; S.preset=null;
+  log(`curator published feed · ${n} rows · live by ${fmtClock(S.pendingAt)} or next open`,"e");
+  refreshFeedPreview();
+}
+
+function median(a){ if(!a.length) return null; const s=[...a].sort((x,y)=>x-y), m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function evalHTML(){
+  const c=S.checks, r=S.rail;
+  const mark=v=> v===null||v===undefined ? `<span class="st na">n/a</span>` : v ? `<span class="st ok">Pass</span>` : `<span class="st bad">Fail</span>`;
+  const fr=[
+    ["FR1","Spotlight is the first row on home", c.fr1, c.railShown?`First row: ${c.first}`:"Rail hidden this session"],
+    ["FR2","15–20 titles, feed only, no backfill", c.fr2, c.railShown?`${c.n} titles, all from the feed`:"Rail hidden this session"],
+    ["FR3","Curators edit without a deploy", true, S.pendingFeed!==null?`Update pending, live by ${fmtClock(S.pendingAt)}`:"Edit the CSV in Curator feed"],
+    ["FR4","Tile opens detail in 1 tap, same as other rows", true, "Every row uses the same tap → detail path"],
+    ["FR5","Fewer than 15 valid or load failure hides the rail", c.fr5, r.suppressed?`Hidden: ${r.reason}`:"Rail has enough titles"],
+    ["FR6","Same content and function on mobile and TV", S.seen.mobile&&S.seen.tv?true:null, `Tried: ${["mobile","tv"].filter(d=>S.seen[d]).join(" and ")||"none"}${S.seen.mobile&&S.seen.tv?"":". Switch device to check."}`],
+    ["FR7","Algorithmic rows unchanged", c.fr7, "Row order and contents match the baseline"]
+  ];
+  const withRail=S.sessions.filter(s=>s.time!==null&&s.rail).map(s=>s.time), without=S.sessions.filter(s=>s.time!==null&&!s.rail).map(s=>s.time);
+  const mR=median(withRail), mN=median(without);
+  const dropped=r.failed?0:r.total-r.tiles.length, pct=r.total?dropped/r.total*100:0;
+  return `<div><h3>Functional requirements</h3><div class="checks">${fr.map(([k,t,v,d])=>`<div class="check"><code>${k}</code><div>${esc(t)}<div class="d">${esc(d)}</div></div>${mark(v)}</div>`).join("")}</div></div>
+  <div><h3>Evals</h3><div class="kpis">
+    <div class="kpi"><div class="v">${mR!==null?mR.toFixed(1)+"s":"—"}</div><div class="l">Median time to first pick, rail shown (${withRail.length})</div></div>
+    <div class="kpi"><div class="v">${mN!==null?mN.toFixed(1)+"s":"—"}</div><div class="l">Median time to first pick, no rail (${without.length})</div></div>
+    <div class="kpi"><div class="v">${c.badTiles||0}</div><div class="l">Broken, delisted or locked tiles shown (target 0)</div></div>
+    <div class="kpi"><div class="v" style="color:${pct>2?"var(--warn)":"var(--ok)"}">${pct.toFixed(0)}%</div><div class="l">Feed rows dropped by guard${pct>2?" · above 2%, flag curation team":""}</div></div>
+  </div></div>
+  <div><h3>Sessions</h3><div class="scroll" style="max-height:170px"><table class="stable"><thead><tr><th>#</th><th>Device</th><th>Rail</th><th>First pick</th><th>From</th></tr></thead><tbody>${[...S.sessions].reverse().map(s=>`<tr><td>${s.n}</td><td>${s.device==="tv"?"TV":"Mobile"}</td><td>${s.rail?"Shown":"Hidden"}</td><td>${s.time!==null?s.time.toFixed(1)+"s":"—"}</td><td>${s.src||"—"}</td></tr>`).join("")}</tbody></table></div></div>
+  <div><h3>Event log</h3><div class="log">${S.log.map(l=>`<div class="${l.cls}"><span class="t">${l.t}</span> ${esc(l.msg)}</div>`).join("")}</div></div>`;
+}
+
+openApp();
+</script>
+
+</body></html>
