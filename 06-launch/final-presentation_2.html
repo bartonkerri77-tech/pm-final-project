@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StreamLine Spotlight · Final Project</title>
+<meta name="description" content="StreamLine Spotlight, a human-curated discovery rail for Wanderers. Product School PM certification final project by Kerri Barton.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Saans and Antarctican Mono are not served by Google Fonts. They are used first when installed locally;
+     Hanken Grotesk and DM Mono load from Google Fonts as the closest matches. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#07162C; --fg:#ffffff; --muted:#ffffff;
+  --orange:#fb923c; --cyan:#22d3ee; --teal:#34d399; --blue:#60a5fa; --violet:#a78bfa; --pink:#f472b6;
+  --eyebrow:#fdba74; --line:rgba(251,146,60,0.25); --line-soft:rgba(255,255,255,0.10);
+  --card:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015));
+  --shadow:0 22px 48px -22px rgba(0,0,0,0.75),0 2px 0 rgba(255,255,255,0.03) inset;
+  --head:"Saans","Hanken Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Saans","Hanken Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Antarctican Mono","DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:400;font-size:clamp(14px,1.05vw,17px);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--head);margin:0;text-wrap:balance;letter-spacing:-0.015em}
+p{margin:0}
+
+/* ---------- slide frame ---------- */
+section{min-height:100vh;scroll-snap-align:start;position:relative;display:flex;align-items:center;
+  padding-block:clamp(56px,7vh,84px) clamp(32px,5vh,56px);padding-inline:clamp(16px,6vw,104px) clamp(16px,7vw,120px);overflow:hidden}
+section::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 50% at 85% 0%,rgba(251,146,60,0.10),transparent 70%),radial-gradient(50% 45% at 0% 100%,rgba(34,211,238,0.07),transparent 70%)}
+.wrap{position:relative;width:100%;max-width:1320px;margin-inline:auto;display:flex;flex-direction:column;gap:clamp(14px,2.2vh,26px)}
+.eyebrow{font-family:var(--mono);font-size:clamp(11px,0.8vw,13px);font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--eyebrow)}
+.slide-head{display:flex;flex-direction:column;gap:8px}
+.slide-head h2{font-size:clamp(26px,3.1vw,46px);font-weight:800;line-height:1.08}
+.slide-head .dek{max-width:72ch;font-size:clamp(14px,1.1vw,18px)}
+.pagenum{position:absolute;right:clamp(16px,7vw,120px);bottom:clamp(14px,3vh,28px);font-family:var(--mono);font-size:11px;letter-spacing:.12em;opacity:.55}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(14px,1.6vw,24px);display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.key{box-shadow:var(--shadow)}
+.card.hero{background:linear-gradient(135deg,rgba(251,146,60,0.18),rgba(167,139,250,0.08) 55%,rgba(34,211,238,0.06));box-shadow:var(--shadow)}
+.card h3{font-size:clamp(16px,1.35vw,22px);font-weight:700;line-height:1.2}
+.label{font-family:var(--mono);font-size:clamp(10.5px,0.75vw,12px);font-weight:500;text-transform:uppercase;letter-spacing:0.12em}
+.small{font-size:clamp(12.5px,0.9vw,15px)}
+.grid{display:grid;gap:clamp(12px,1.4vw,20px)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+ul.clean{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+ul.clean li{position:relative;padding-left:16px}
+ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--dot,var(--orange))}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.quote{font-family:var(--head);font-weight:600;font-size:clamp(15px,1.25vw,20px);line-height:1.35;border-left:2px solid var(--pink);padding-left:14px}
+.quote cite{display:block;font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;color:var(--eyebrow)}
+
+/* ---------- pills & buttons ---------- */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:clamp(11px,0.78vw,12.5px);font-weight:500;letter-spacing:.06em;padding:6px 11px;border-radius:999px;border:1px solid var(--c,var(--orange));color:var(--fg);background:color-mix(in srgb,var(--c,var(--orange)) 14%,transparent);white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--c,var(--orange));font-style:normal}
+.pill.off{opacity:.6;border-style:dashed}
+.btn{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;text-decoration:none;font-family:var(--head);font-weight:700;font-size:clamp(14px,1vw,16px);padding:12px 20px;border-radius:12px;background:var(--orange);color:#07162C;box-shadow:0 14px 32px -14px rgba(251,146,60,.7);transition:transform .15s ease,box-shadow .15s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 18px 36px -14px rgba(251,146,60,.85)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line);box-shadow:none}
+.btn svg{width:16px;height:16px}
+.linkrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.placeholder{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:4px 9px;border-radius:6px;border:1px dashed rgba(253,186,116,.6);color:var(--eyebrow)}
+
+/* ---------- cover ---------- */
+#cover .wrap{gap:clamp(18px,3vh,34px)}
+.cover-title{font-size:clamp(40px,6vw,92px);font-weight:900;line-height:.98;letter-spacing:-0.03em;max-width:15ch}
+.cover-title span{color:var(--orange)}
+.cover-sub{font-family:var(--head);font-weight:600;font-size:clamp(17px,1.6vw,26px);line-height:1.35;max-width:46ch}
+.cover-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.4vw,20px);max-width:1100px}
+.cover-meta .card{gap:6px}
+.cover-meta a{font-family:var(--mono);font-size:clamp(12px,.85vw,14px);word-break:break-all;text-decoration:none;border-bottom:1px solid var(--line)}
+.rail-motif{position:absolute;right:clamp(16px,7vw,120px);top:50%;transform:translateY(-50%);display:flex;gap:10px;opacity:.9}
+.rail-motif span{width:clamp(44px,4.4vw,70px);aspect-ratio:2/3;border-radius:10px;border:1px solid var(--line);background:linear-gradient(170deg,var(--a),#07162C 92%)}
+.rail-motif span:nth-child(1){--a:rgba(251,146,60,.65)}
+.rail-motif span:nth-child(2){--a:rgba(34,211,238,.5);transform:translateY(18px)}
+.rail-motif span:nth-child(3){--a:rgba(167,139,250,.55)}
+.rail-motif span:nth-child(4){--a:rgba(52,211,153,.5);transform:translateY(18px)}
+
+/* ---------- strategy ---------- */
+.stat{display:flex;align-items:baseline;gap:10px}
+.stat b{font-family:var(--mono);font-weight:500;font-size:clamp(28px,2.8vw,44px);color:var(--orange);line-height:1}
+.callout{position:relative;border-radius:16px;padding:clamp(18px,2vw,28px);padding-left:clamp(22px,2.4vw,34px);
+  background:linear-gradient(120deg,rgba(251,146,60,0.20),rgba(244,114,182,0.08) 60%,rgba(7,22,44,0));border:1px solid rgba(251,146,60,.5);box-shadow:var(--shadow)}
+.callout::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:var(--orange)}
+.callout p{font-family:var(--head);font-weight:600;font-size:clamp(16px,1.5vw,24px);line-height:1.35}
+.callout em{font-style:normal;color:var(--eyebrow)}
+
+/* ---------- research / journey ---------- */
+.research-top{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(12px,1.4vw,20px)}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;counter-reset:s}
+.steps div{border:1px solid var(--line-soft);border-radius:12px;padding:10px;font-size:clamp(12px,.86vw,14px);line-height:1.35;background:rgba(255,255,255,.02)}
+.steps div::before{counter-increment:s;content:"0" counter(s);display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--eyebrow);margin-bottom:4px}
+.steps div.end{border-color:rgba(244,114,182,.55);background:rgba(244,114,182,.08)}
+.journey{border:1px solid var(--line);border-radius:16px;padding:clamp(14px,1.6vw,22px);background:var(--card)}
+.journey-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.jtrack{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.jcurve{position:absolute;left:0;right:0;top:0;height:70px;width:100%;overflow:visible;pointer-events:none}
+.jstage{position:relative;display:flex;flex-direction:column;gap:6px;padding-top:84px;min-width:0}
+.jstage .dot{position:absolute;left:50%;top:calc(var(--y) * 1px);width:14px;height:14px;margin-left:-7px;margin-top:-7px;border-radius:50%;background:var(--bg);border:3px solid var(--blue)}
+.jstage h4{font-size:clamp(12.5px,.95vw,15px);font-weight:700;line-height:1.2}
+.jstage p{font-size:clamp(11.5px,.82vw,13.5px);line-height:1.35}
+.jstage.misery .dot{border-color:var(--pink);width:20px;height:20px;margin-left:-10px;margin-top:-10px;box-shadow:0 0 0 6px rgba(244,114,182,.18)}
+.jstage.misery{background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.5);border-radius:12px;padding:84px 10px 10px}
+.jstage.misery .dot{top:calc(var(--y) * 1px)}
+.tag{display:inline-block;align-self:flex-start;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:5px}
+.tag.pink{background:var(--pink);color:#07162C}
+.tag.teal{background:var(--teal);color:#07162C}
+.intervene{margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:clamp(12.5px,.9vw,14.5px)}
+
+/* ---------- blueprint ---------- */
+.moscow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.2vw,16px)}
+.mcol{border-radius:14px;border:1px solid var(--line);background:var(--card);padding:clamp(12px,1.2vw,18px);display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--c)}
+.mcol .label{color:var(--c)}
+.mcol ul{--dot:var(--c)}
+.mcol li{font-size:clamp(12px,.86vw,14px);line-height:1.35}
+.roadmap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.roadmap div{border-radius:10px;padding:9px 11px;border:1px solid var(--line-soft);font-size:clamp(12px,.85vw,14px);line-height:1.35}
+.roadmap b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.bp-bottom{display:grid;grid-template-columns:1.6fr 1fr;gap:clamp(12px,1.4vw,20px)}
+.fr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px}
+.fr div{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:clamp(12px,.86vw,14px);line-height:1.35}
+.fr code{font-family:var(--mono);font-size:11px;color:var(--cyan);padding-top:2px}
+
+/* ---------- validation ---------- */
+.exp{border-radius:16px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.exp-row{display:grid;grid-template-columns:170px minmax(0,1fr);border-top:1px solid var(--line-soft)}
+.exp-row:first-child{border-top:0}
+.exp-row > .label{padding:clamp(10px,1.2vh,14px) 16px;color:var(--eyebrow);background:rgba(251,146,60,.06);border-right:1px solid var(--line-soft)}
+.exp-row > .val{padding:clamp(10px,1.2vh,14px) 18px;font-size:clamp(12.5px,.92vw,15px);line-height:1.4}
+.cv{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cv b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:3px}
+.metrics-inline{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:6px}
+.metrics-inline span{font-family:var(--mono);font-size:clamp(11.5px,.82vw,13px)}
+.metrics-inline span b{font-weight:500;color:var(--orange)}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.rule{border-radius:12px;padding:10px 12px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 10%,transparent);font-size:clamp(12px,.86vw,14px);line-height:1.38}
+.rule b{display:block;font-family:var(--mono);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:11.5px;color:var(--c);margin-bottom:3px}
+
+/* ---------- launch ---------- */
+.gtm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.2vw,16px)}
+.gtm .card .big{font-family:var(--head);font-weight:800;font-size:clamp(18px,1.6vw,26px);line-height:1.15}
+.dash{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.2vw,16px)}
+.tile{border-radius:16px;border:1px solid var(--line);padding:clamp(14px,1.4vw,20px);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--c)}
+.tile .target{font-family:var(--mono);font-weight:500;font-size:clamp(22px,2vw,32px);line-height:1;color:var(--c)}
+.tile .status{margin-top:auto}
+.badsignal{border-radius:16px;border:1px solid rgba(244,114,182,.6);background:linear-gradient(120deg,rgba(244,114,182,.16),rgba(244,114,182,.03));padding:clamp(14px,1.4vw,20px);display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:16px;align-items:start}
+.badsignal .label{color:var(--pink)}
+.badsignal p{font-size:clamp(12px,.86vw,14px);line-height:1.38}
+.badsignal p b{font-family:var(--head);font-weight:700;display:block}
+.decision{font-size:clamp(12.5px,.9vw,14.5px)}
+.decision b{color:var(--teal)}
+
+.launch-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:clamp(12px,1.4vw,20px);align-items:start}
+.launch-right{display:flex;flex-direction:column;gap:clamp(10px,1.4vh,16px)}
+.kv{display:grid;grid-template-columns:78px 1fr;gap:10px;font-size:clamp(12.5px,.9vw,14.5px);line-height:1.38}
+.kv .label{color:var(--fg);opacity:.75;padding-top:2px}
+.kv b{font-family:var(--head);font-weight:800}
+.launch-right .tile .small{font-size:clamp(11.5px,.82vw,13.5px)}
+.launch-right .badsignal{grid-template-columns:1fr;gap:8px}
+.launch-right .badsignal p b{display:inline;margin-right:6px}
+/* ---------- story ---------- */
+.story{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.4vw,20px)}
+.aha{background:linear-gradient(135deg,rgba(34,211,238,.16),rgba(96,165,250,.06));border-color:rgba(34,211,238,.45)}
+.aha .label{color:var(--cyan)}
+.next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.next div{border-radius:12px;border:1px solid var(--line-soft);padding:10px 12px;font-size:clamp(12px,.86vw,14px);line-height:1.38}
+.next b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--c);margin-bottom:3px}
+
+/* ---------- thank you ---------- */
+#submit .wrap{align-items:flex-start;gap:clamp(18px,3vh,30px)}
+.thanks{font-size:clamp(44px,6.4vw,100px);font-weight:900;line-height:.95;letter-spacing:-0.03em}
+.thanks span{color:var(--orange)}
+.submit-pill{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;background:linear-gradient(90deg,var(--orange),#fdba74);color:#07162C;font-family:var(--head);font-weight:800;font-size:clamp(15px,1.15vw,19px);text-decoration:none;box-shadow:0 18px 40px -16px rgba(251,146,60,.8)}
+.submit-pill .label{background:#07162C;color:var(--eyebrow);padding:4px 9px;border-radius:999px;font-size:10.5px}
+
+/* ---------- chrome: progress + dots ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:20;background:rgba(255,255,255,.06)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--pink));transition:width .12s linear}
+.dots{position:fixed;right:clamp(10px,1.6vw,26px);top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px}
+.dots button{position:relative;width:11px;height:11px;border-radius:50%;padding:0;border:1px solid rgba(253,186,116,.7);background:transparent;cursor:pointer;transition:transform .15s,background .15s}
+.dots button[aria-current="true"]{background:var(--orange);border-color:var(--orange);transform:scale(1.25)}
+.dots button span{position:absolute;right:20px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:#0d2240;border:1px solid var(--line);padding:3px 8px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s}
+.dots button:hover span,.dots button:focus-visible span{opacity:1}
+.keyhint{position:fixed;left:clamp(16px,2vw,28px);bottom:14px;z-index:20;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;opacity:.5}
+
+.tile .pill{white-space:normal;align-self:flex-start}
+.launch-grid .pill{padding:5px 10px}
+@media (max-height:760px) and (min-width:821px){
+  section{padding-block:44px 30px}
+  .wrap{gap:12px}
+  .slide-head h2{font-size:clamp(24px,2.7vw,38px)}
+  .card,.tile,.journey{padding:13px 15px}
+  .card{gap:8px}
+  .launch-grid .pills{gap:6px}
+  .launch-grid .pill{padding:4px 9px;font-size:11px}
+  .tile .target{font-size:24px}
+  .jstage{padding-top:76px}
+  .jstage.misery{padding-top:76px}
+}
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .rail-motif{display:none}
+  .moscow,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .badsignal{grid-template-columns:1fr 1fr}
+}
+@media (max-width:820px){
+  html{scroll-snap-type:y proximity}
+  .launch-grid,.kv,.g2,.g3,.research-top,.bp-bottom,.story,.gtm,.dash,.rules,.cover-meta,.next,.cv,.fr{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .jtrack{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .jcurve{display:none}
+  .jstage,.jstage.misery{padding-top:10px}
+  .jstage .dot{display:none}
+  .exp-row{grid-template-columns:1fr}
+  .exp-row > .label{border-right:0}
+  .badsignal{grid-template-columns:1fr}
+  .dots,.keyhint{display:none}
+  section{padding-inline:16px}
+  .pagenum{right:16px}
+}
+@media (max-width:480px){ .moscow{grid-template-columns:1fr} .jtrack{grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+<div class="keyhint" aria-hidden="true">↑ ↓ · SPACE · HOME / END · ESC</div>
+
+<main>
+
+<!-- ===================== 1. COVER ===================== -->
+<section id="cover" data-title="Cover" aria-label="Cover">
+  <div class="rail-motif" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <div class="eyebrow">Product School · PM Certification · Final Project</div>
+    <h1 class="cover-title">StreamLine Spotlight, <span>a Human-Curated Discovery Rail</span></h1>
+    <p class="cover-sub">Turn a 15,000-title home screen into a decision: a hand-picked Spotlight rail that helps Wanderers start watching instead of scrolling away.</p>
+    <div class="cover-meta">
+      <div class="card"><span class="label" style="color:var(--eyebrow)">Name · Cohort</span><span>Kerri Barton · Product Management Cohort · October 2026</span></div>
+      <div class="card"><span class="label" style="color:var(--eyebrow)">Repository</span><a href="https://github.com/your-handle/pm-final-project" target="_blank" rel="noopener">github.com/your-handle/pm-final-project</a></div>
+      <div class="card"><span class="label" style="color:var(--eyebrow)">Prototype</span><a href="https://claude.ai/artifact/Pke2DVunjer3XWe9Tmz7Wa" target="_blank" rel="noopener">Spotlight Rail Prototype (live)</a></div>
+    </div>
+  </div>
+  <div class="pagenum">01 / 08</div>
+</section>
+
+<!-- ===================== 2. STRATEGY ===================== -->
+<section id="strategy" data-title="Strategy" aria-label="Strategy">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 5 · Strategy</div>
+      <h2>Wanderers don't need more titles. They need a place to start.</h2>
+    </div>
+
+    <div class="grid g2">
+      <div class="card key">
+        <span class="label" style="color:var(--pink)">Problem hook</span>
+        <h3>A scroll that ends in an exit, not a choice</h3>
+        <p class="small">Wanderers are 41% of our base, with the lowest lifetime value and the fewest sessions. They open StreamLine, scroll a 15,000-title catalog ranked by an algorithm they no longer trust, and leave without watching anything. Users describe it as a discovery and curation problem, not a technical one.</p>
+        <div class="grid g2" style="margin-top:4px">
+          <div class="stat"><b>41%</b><span class="small">of subscribers are Wanderers</span></div>
+          <div class="stat"><b>~20m</b><span class="small">of scrolling before giving up</span></div>
+        </div>
+      </div>
+      <div class="card key">
+        <span class="label" style="color:var(--teal)">Value proposition</span>
+        <h3>A hand-picked front door to the catalog</h3>
+        <p class="small">Spotlight puts 15–20 titles chosen by a human editor, not an algorithm, at the very top of the home screen. A Wanderer's first scroll ends in a decision instead of another dead end, and the curation team refreshes it through a simple feed with no engineering deploy.</p>
+        <blockquote class="quote" style="margin:4px 0 0">"Volume went up, quality of my evenings went down."<cite>Lapsed subscriber, user research</cite></blockquote>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="label" style="color:var(--eyebrow);margin-bottom:8px">Data-backed hypothesis</div>
+      <p>We believe adding a Spotlight row of <em>15–20 editor-picked titles</em> as the first home row for <em>Wanderers</em> will reduce the time it takes them to start watching, measured by <em>time to first play falling 30+ seconds within 28 days</em>, while protecting home sessions with 30+ minutes of viewing.</p>
+    </div>
+  </div>
+  <div class="pagenum">02 / 08</div>
+</section>
+
+<!-- ===================== 3. RESEARCH ===================== -->
+<section id="research" data-title="Research" aria-label="Research">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 6 · Research</div>
+      <h2>Users already built their own curation. Outside our app.</h2>
+    </div>
+
+    <div class="research-top">
+      <div class="card key">
+        <span class="label" style="color:var(--eyebrow)">Workaround · the Disillusioned Enthusiast</span>
+        <div class="steps">
+          <div>Stops trusting "Because you watched" after it returns near-identical sequels: "I'm not a genre, I'm a person."</div>
+          <div>Waits for a friend's recommendation, because a person's taste beats the algorithm's.</div>
+          <div>Subscribes to a competitor's email that sends two hand-picked films a week.</div>
+          <div class="end">Once that source reliably works, cancels StreamLine.</div>
+        </div>
+        <p class="small">He pays for a 15,000-title library, then makes his viewing decisions from outside it.</p>
+      </div>
+      <div class="card">
+        <span class="label" style="color:var(--cyan)">Competitive analysis</span>
+        <ul class="clean small" style="--dot:var(--cyan)">
+          <li><b>Niche curated competitor:</b> two hand-picked films a week beat our full catalog for this segment. Smaller and trusted wins.</li>
+          <li><b>Friends and word of mouth:</b> trusted, but slow and limited to one person's taste.</li>
+          <li><b>StreamLine today:</b> repetitive algorithmic rows, and search that only matches exact titles.</li>
+        </ul>
+        <p class="small"><b>Gap:</b> nobody offers on-demand, human-picked choices inside the library you already pay for.</p>
+      </div>
+    </div>
+
+    <div class="journey" role="group" aria-label="Current-state journey map">
+      <div class="journey-head">
+        <span class="label" style="color:var(--eyebrow)">Current-state journey · Wanderer opening the app</span>
+        <span class="tag pink">Moment of misery</span>
+      </div>
+      <div class="jtrack">
+        <svg class="jcurve" viewBox="0 0 600 70" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M50 18 C 90 18, 120 28, 150 30 S 230 40, 250 44 S 330 62, 350 62 S 430 52, 450 50 S 530 58, 550 60" fill="none" stroke="url(#jg)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+          <defs><linearGradient id="jg" x1="0" x2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset=".55" stop-color="#f472b6"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        </svg>
+        <div class="jstage" style="--y:18"><span class="dot"></span><h4>Open app</h4><p>Wants something good for tonight.</p></div>
+        <div class="jstage" style="--y:30"><span class="dot"></span><h4>Scan algorithmic rows</h4><p>Same franchises, nothing new.</p></div>
+        <div class="jstage" style="--y:44"><span class="dot"></span><h4>Try search</h4><p>"Slow quiet French drama" returns irrelevant results.</p></div>
+        <div class="jstage misery" style="--y:62"><span class="dot"></span><h4>Scroll ~20 minutes</h4><p>15,000 titles, no decision.</p></div>
+        <div class="jstage" style="--y:50"><span class="dot"></span><h4>Leave without watching</h4><p>Texts a friend, or opens the competitor's email.</p></div>
+        <div class="jstage" style="--y:60"><span class="dot"></span><h4>Cancel</h4><p>Month 0 → Month 6 churn.</p></div>
+      </div>
+      <div class="intervene"><span class="tag teal">Spotlight intervenes</span><span>At the very first screen, before the scroll starts: a short, human-picked list where the misery begins.</span></div>
+    </div>
+  </div>
+  <div class="pagenum">03 / 08</div>
+</section>
+
+<!-- ===================== 4. BLUEPRINT ===================== -->
+<section id="blueprint" data-title="Blueprint" aria-label="Blueprint">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 7 · Blueprint</div>
+      <h2>Three Must Haves that make "see → pick → watch" work.</h2>
+    </div>
+
+    <div class="moscow">
+      <div class="mcol" style="--c:var(--orange)"><span class="label">Must</span>
+        <ul class="clean"><li>Spotlight rail as the first home row</li><li>15–20 titles from a manual curation feed (CSV, no deploy)</li><li>One tap from tile to detail or playback</li><li>Rail hides itself if the feed is short or fails</li></ul></div>
+      <div class="mcol" style="--c:var(--cyan)"><span class="label">Should</span>
+        <ul class="clean"><li>"Hand-picked" visual label (moved down a priority to protect the 3-week sprint)</li><li>Play-start tracking (promoted to Must for the experiment)</li></ul></div>
+      <div class="mcol" style="--c:var(--violet)"><span class="label">Could</span>
+        <ul class="clean"><li>Editor's note on the detail page</li><li>Weekly "Spotlight picks" email</li></ul></div>
+      <div class="mcol" style="--c:var(--pink)"><span class="label">Won't (now)</span>
+        <ul class="clean"><li>AI personalization of picks</li><li>"Why this matches you" AI text</li><li>Curator profiles</li><li>Any change to algorithmic rows</li></ul></div>
+    </div>
+
+    <div class="bp-bottom">
+      <div class="card key">
+        <span class="label" style="color:var(--eyebrow)">PRD highlights · functional requirements</span>
+        <div class="fr">
+          <div><code>FR1</code><span>First row on home in 100% of loads</span></div>
+          <div><code>FR2</code><span>15–20 titles, never filled in by the algorithm</span></div>
+          <div><code>FR3</code><span>Curator edits go live within 1 hour or the next app open</span></div>
+          <div><code>FR4</code><span>Tile → detail in zero extra steps</span></div>
+          <div><code>FR5</code><span>Fewer than 15 valid titles → rail hides, no broken state</span></div>
+          <div><code>FR6</code><span>Same content and behavior on mobile and TV</span></div>
+          <div><code>FR7</code><span>Existing algorithmic rows untouched</span></div>
+          <div><code>GUARD</code><span>Duplicate, unknown, delisted or region-locked titles are dropped</span></div>
+        </div>
+        <div class="roadmap" style="margin-top:6px">
+          <div style="border-color:rgba(251,146,60,.45)"><b style="color:var(--orange)">Now</b>V1 rail in a 3-week sprint, then a 28-day A/B test</div>
+          <div><b style="color:var(--cyan)">Next</b>Mood-based entry, weekly picks email</div>
+          <div><b style="color:var(--violet)">Later</b>Personalization, curator profiles</div>
+        </div>
+      </div>
+      <div class="card hero">
+        <span class="label" style="color:var(--eyebrow)">Working prototype</span>
+        <h3>Home → Spotlight → detail → play, on mobile and TV</h3>
+        <p class="small">It includes a curator CSV editor, the safety guard, empty and failed feed states, and live pass/fail checks for each functional requirement.</p>
+        <a class="btn" href="https://claude.ai/artifact/Pke2DVunjer3XWe9Tmz7Wa" target="_blank" rel="noopener">View prototype
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="pagenum">04 / 08</div>
+</section>
+
+<!-- ===================== 5. VALIDATION ===================== -->
+<section id="validation" data-title="Validation" aria-label="Validation">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 8 · Validation</div>
+      <h2>One change, one primary metric, one decision on day 28.</h2>
+    </div>
+
+    <div class="exp">
+      <div class="exp-row"><div class="label">Hypothesis</div><div class="val">A Spotlight row of 15–20 editor-picked titles, as the first home row for Wanderers, will reduce the time it takes them to start watching.</div></div>
+      <div class="exp-row"><div class="label">Control vs variant</div><div class="val cv">
+        <div><b style="color:var(--blue)">A · Control</b>Today's home screen: Continue Watching, then algorithmic rows. No hand-picked row.</div>
+        <div><b style="color:var(--orange)">B · Variant</b>The same screen, plus one "Spotlight" row on top. Taps open the detail page exactly as other tiles do.</div>
+      </div></div>
+      <div class="exp-row"><div class="label">Primary metric</div><div class="val">
+        <b>Time to first play</b> (2+ minutes of viewing, any title). A session with no play within 20 minutes counts as 20 minutes, so abandonment counts as the worst outcome.
+        <div class="metrics-inline">
+          <span>Baseline <b>2:00</b> (being recalculated with the cap)</span><span>MDE <b>30 seconds faster</b></span><span>Sample <b>1,683 / arm</b></span><span>Split <b>50/50, by user</b></span><span>Duration <b>28 days</b></span><span>Significance <b>p &lt; .05</b>, 80% power</span>
+        </div></div></div>
+      <div class="exp-row"><div class="label">Guardrails</div><div class="val">
+        <div class="pills">
+          <span class="pill" style="--c:var(--teal)"><i></i>30+ min viewing sessions: drop no more than 2 pts</span>
+          <span class="pill" style="--c:var(--teal)"><i></i>Continue Watching resume rate: drop no more than 2%</span>
+          <span class="pill" style="--c:var(--teal)"><i></i>28-day cancellations: rise no more than 0.5 pts</span>
+        </div></div></div>
+      <div class="exp-row"><div class="label">Decision rule</div><div class="val">
+        <div class="rules">
+          <div class="rule" style="--c:var(--teal)"><b>Ship</b>Primary improves by 30+ seconds at p &lt; .05 and every guardrail holds.</div>
+          <div class="rule" style="--c:var(--orange)"><b>Iterate</b>The gain is positive but under 30 seconds or not significant, or taps rise without 2-minute plays.</div>
+          <div class="rule" style="--c:var(--pink)"><b>Kill</b>The confidence interval rules out a 30-second gain, or any guardrail is breached.</div>
+        </div></div></div>
+    </div>
+  </div>
+  <div class="pagenum">05 / 08</div>
+</section>
+
+<!-- ===================== 6. LAUNCH ===================== -->
+<section id="launch" data-title="Launch" aria-label="Launch">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 9 · Launch</div>
+      <h2>A Medium, engagement-first launch aimed at one segment.</h2>
+    </div>
+
+    <div class="launch-grid">
+    <div class="card key">
+      <span class="label" style="color:var(--eyebrow)">GTM strategy</span>
+      <div class="kv"><span class="label">Goal</span><div><b>Engagement</b> · retain by activating: turn failed sessions into sessions that end in a play.</div></div>
+      <div class="kv"><span class="label">Audience</span><div><b>Existing Wanderers</b> · 41% of the base. No acquisition, since only subscribers see Spotlight.</div></div>
+      <div class="kv"><span class="label">Tier</span><div><b>M · Medium</b> · a large segment's first screen, but easy to reverse and still unproven.</div></div>
+      <span class="label" style="color:var(--eyebrow);margin-top:4px">Channels · external comms off during the 28-day test</span>
+      <div class="pills">
+        <span class="pill" style="--c:var(--orange)"><i></i>Owned · the rail itself</span>
+        <span class="pill" style="--c:var(--orange)"><i></i>Owned · first-view highlight</span>
+        <span class="pill" style="--c:var(--orange)"><i></i>Owned · weekly picks email</span>
+        <span class="pill" style="--c:var(--orange)"><i></i>Owned · push, 7+ days inactive</span>
+        <span class="pill" style="--c:var(--cyan)"><i></i>Earned · human-curator story</span>
+        <span class="pill off" style="--c:var(--violet)"><i></i>Paid · optional win-back</span>
+      </div>
+      <span class="label" style="color:var(--eyebrow);margin-top:4px">Enablement</span>
+      <div class="pills">
+        <span class="pill" style="--c:var(--blue)"><i></i>Launch brief</span>
+        <span class="pill" style="--c:var(--blue)"><i></i>Support FAQ</span>
+        <span class="pill" style="--c:var(--blue)"><i></i>Curation runbook</span>
+        <span class="pill" style="--c:var(--blue)"><i></i>Picks calendar</span>
+      </div>
+    </div>
+    <div class="launch-right">
+    <div class="dash" role="group" aria-label="Success metrics">
+      <div class="tile" style="--c:var(--orange)"><span class="label">Time to first play</span><div class="target">−30s</div><p class="small">vs Control, p &lt; .05. Is the scroll-and-abandon moment shorter?</p><span class="pill status" style="--c:var(--orange)"><i></i>Primary · day 28</span></div>
+      <div class="tile" style="--c:var(--teal)"><span class="label">Successful sessions / wk</span><div class="target">↑ sig.</div><p class="small">Sessions with 2+ min of viewing. Are Wanderers back more often?</p><span class="pill status" style="--c:var(--teal)"><i></i>Habit · day 28</span></div>
+      <div class="tile" style="--c:var(--violet)"><span class="label">Repeat Spotlight use</span><div class="target">2+ wks</div><p class="small">Play from Spotlight in 2+ separate weeks. Is it earning trust?</p><span class="pill status" style="--c:var(--violet)"><i></i>Trust · target after wk 1</span></div>
+    </div>
+
+    <div class="badsignal">
+      <span class="label">Bad signals</span>
+      <p><b>Novelty fade</b>Spotlight taps are strong in week 1, then fall toward zero by week 4.</p>
+      <p><b>Taps without plays</b>Many plays stop before 2 minutes. The picks aren't landing, which is a curation problem.</p>
+      <p><b>Harm elsewhere</b>Continue Watching resume rate falls by more than 2% after moving down a row.</p>
+    </div>
+    <p class="decision"><b>Most likely decision:</b> ship, then iterate on curation. Placement alone should cut time to first play. Repeat use is the less certain metric.</p>
+    </div>
+    </div>
+  </div>
+  <div class="pagenum">06 / 08</div>
+</section>
+
+<!-- ===================== 7. STORY ===================== -->
+<section id="story" data-title="Story" aria-label="Story">
+  <div class="wrap">
+    <div class="slide-head">
+      <div class="eyebrow">Slide 10 · Story</div>
+      <h2>What I learned building Spotlight.</h2>
+    </div>
+
+    <div class="story">
+      <div class="card key">
+        <span class="label" style="color:var(--pink)">Friction points</span>
+        <h3>Slicing the data to fit the persona</h3>
+        <p class="small">Most difficult part for me was the slicing the data and matching it to the right persona pieces.</p>
+        <p class="small">I appreciated the data-to-hypothesis flow as a key way to frame and shift the conversation to the why.</p>
+      </div>
+      <div class="card hero aha">
+        <span class="label">My aha moment</span>
+        <h3>AI is an excellent co-pilot.</h3>
+        <p class="small">I learned that I can easily spend the time reworking the manually created process documents into AI prompts and skills to speed up the time.</p>
+        <p class="small">I have already outlined a new way of working with my team and we've had discussions on the art and science of what we are doing, along with how we keep the human in the loop.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="label" style="color:var(--eyebrow)">Key takeaways · what's next</span>
+      <div class="next">
+        <div style="--c:var(--orange)"><b>Biggest takeaway</b>There's an easier way to build and maintain roadmaps and ensure executive alignment.</div>
+        <div style="--c:var(--teal)"><b>In my real life</b>I investigated dozens of approaches to dashboards, roadmap visualizations, and prioritization exercises.</div>
+        <div style="--c:var(--violet)"><b>Next</b>This class helped me see that I can go 100x faster and continuously improve and tune how the team works.</div>
+      </div>
+    </div>
+  </div>
+  <div class="pagenum">07 / 08</div>
+</section>
+
+<!-- ===================== 8. THANK YOU / SUBMIT ===================== -->
+<section id="submit" data-title="Submit" aria-label="Thank you and submit">
+  <div class="wrap">
+    <div class="eyebrow">Thank you</div>
+    <h2 class="thanks">Fewer titles.<br><span>Better evenings.</span></h2>
+    <div class="linkrow">
+      <a class="btn ghost" href="https://github.com/your-handle/pm-final-project" target="_blank" rel="noopener">github.com/your-handle/pm-final-project</a>
+      <a class="btn ghost" href="https://claude.ai/artifact/Pke2DVunjer3XWe9Tmz7Wa" target="_blank" rel="noopener">View prototype</a>
+    </div>
+    <div class="pills">
+      <span class="pill" style="--c:var(--cyan)"><i></i>Product Management Cohort · October 2026</span>
+      <span class="pill" style="--c:var(--violet)"><i></i>Kerri Barton</span>
+    </div>
+    <a class="submit-pill" href="https://github.com/your-handle/pm-final-project" target="_blank" rel="noopener"><span class="label">Final project</span>Submit to the learning platform →</a>
+  </div>
+  <div class="pagenum">08 / 08</div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var sections=[].slice.call(document.querySelectorAll('main > section'));
+  var dots=document.getElementById('dots'), bar=document.getElementById('bar'), current=0;
+  sections.forEach(function(s,i){
+    var b=document.createElement('button');
+    b.type='button'; b.setAttribute('aria-label','Go to slide '+(i+1)+': '+s.dataset.title);
+    b.innerHTML='<span>'+String(i+1).padStart(2,'0')+' · '+s.dataset.title+'</span>';
+    b.addEventListener('click',function(){go(i)});
+    dots.appendChild(b);
+  });
+  var dotEls=[].slice.call(dots.children);
+  function go(i){ i=Math.max(0,Math.min(sections.length-1,i)); sections[i].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
+  function update(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+    var mid=h.scrollTop+h.clientHeight/2, idx=0;
+    sections.forEach(function(s,i){ if(s.offsetTop<=mid) idx=i; });
+    current=idx;
+    dotEls.forEach(function(d,i){ d.setAttribute('aria-current', i===idx?'true':'false'); });
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  window.addEventListener('resize',update);
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
+    var k=e.key;
+    if(k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey)){ e.preventDefault(); go(current+1); }
+    else if(k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey)){ e.preventDefault(); go(current-1); }
+    else if(k==='Home'){ e.preventDefault(); go(0); }
+    else if(k==='End'){ e.preventDefault(); go(sections.length-1); }
+    else if(k==='Escape'){ e.preventDefault(); go(0); }
+  });
+  update();
+})();
+</script>
+</body>
+</html>
